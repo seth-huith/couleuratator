@@ -16,7 +16,6 @@
             color: #aabfdf;
             padding: 8px 12px;
             min-height: 254px;
-            margin-top: 38px;
             display: block;
         }
         #color-code {
@@ -46,18 +45,6 @@
     <div class="row">
         <div class="col-6">
             <div class="row">
-                <div class="col-5">
-                    <div class="input-group">
-                        <button class="btn" id="color-picker"><span class="fa fa-eye-dropper"></span></button>
-                        <input type="text" id="color-code" class="form-control" />
-                        <button class="btn btn-primary" data-clipboard-target="#color-code" title="Copier"><span class="fa fa-clipboard"></span></button>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <button class="btn btn-primary" id="base-color">Couleur de base</button>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col">
                     <textarea id="raw-code" class="form-control" rows="10"></textarea>
                 </div>
@@ -76,7 +63,28 @@
     </div>
     <div class="row">
         <hr />
-        <h2>Arme de coloration massive</h2>
+        <h2>Texte coloré</h2>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            <div class="input-group">
+                <span class="input-group-text">Couleur</span>
+                <input id="single-color" value="#aabfdfff" data-jscolor="{}" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <div class="input-group">
+                <span class="input-group-text">Texte</span>
+                <input id="single-text" class="form-control" type="text" />
+                <button id="single-generate" class="btn btn-primary">Ajouter</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <hr />
+        <h2>Arme de coloration massive (dégradé)</h2>
     </div>
     <div class="row">
         <div class="col-5">
@@ -112,16 +120,9 @@
       const raw = $('#raw-code')[0];
       const regexp = /\[([0-9a-fA-F]+)\]([^[\n]*)/gi;
       const code = $('#color-code')[0];
-      const baseColor = "#aabfdf";
-
+      const baseColor = '#aabfdf';
+      const baseColorFull = '[' + baseColor.replace('#', '') + 'ff]';
       const clipboard = new ClipboardJS('.btn');
-      const picker = new JSColor('#color-picker', {
-        format:'hexa',
-        palette: [ baseColor ],
-        onChange: function() {
-            $(code).val('[' + this.toHEXAString().replace('#', '') + ']');
-        }
-      });
 
       function  updatePreview() {
         $(preview).html(
@@ -132,9 +133,15 @@
       }
 
       $(raw).on('keyup change', updatePreview);
-      $("#base-color").on('click', () => {
-        picker.fromString(baseColor);
-        $(code).val('[' + baseColor.replace('#', '') + ']');
+
+      $('#single-generate').on('click', () => {
+        const code = $('#single-color').val().replace('#', '');
+        const text = $('#single-text').val();
+
+        $(raw).val((index, currentText) => {
+          return currentText + '[' + code + ']' + text + baseColorFull;
+        });
+        $(raw).trigger('change');
       })
 
       $('#gradient-generate').on('click', () => {
@@ -144,7 +151,6 @@
         const textSize = text.length;
 
         if (textSize <= 0) {
-          console.log('off');
           return;
         }
 
@@ -174,6 +180,8 @@
 
           rendered += '[' + red + green + blue + 'FF]' + text[i];
         }
+
+        rendered += baseColorFull;
 
         $(raw).val((index, currentText) => {
           return currentText + rendered;
