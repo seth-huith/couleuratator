@@ -110,7 +110,7 @@
     $(function() {
       const preview = $('#preview')[0];
       const raw = $('#raw-code')[0];
-      const regexp = /\[([0-9a-fA-F]+)\]([^[\n]+)/gi;
+      const regexp = /\[([0-9a-fA-F]+)\]([^[\n]*)/gi;
       const code = $('#color-code')[0];
       const baseColor = "#aabfdf";
 
@@ -134,6 +134,7 @@
       $(raw).on('keyup change', updatePreview);
       $("#base-color").on('click', () => {
         picker.fromString(baseColor);
+        $(code).val('[' + baseColor.replace('#', '') + ']');
       })
 
       $('#gradient-generate').on('click', () => {
