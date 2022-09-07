@@ -6,6 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.9/jscolor.min.js"></script>
+    <script src="https://colorjs.io/dist/color.global.js"></script>
     <style>
         body {
             background: #313f64;
@@ -25,9 +26,17 @@
         input, textarea {
             border-color: #212248 !important;
         }
-        h1 {
+        h1, h2 {
             color: #aabfdf;
             margin: 20px 0;
+        }
+        [data-jscolor] {
+            border-width: 1px;
+            border-color: #aabfdf !important;
+        }
+        .form-control {
+            border-width: 1px;
+            border-color: #aabfdf !important;
         }
     </style>
 </head>
@@ -43,6 +52,9 @@
                         <input type="text" id="color-code" class="form-control" />
                         <button class="btn btn-primary" data-clipboard-target="#color-code" title="Copier"><span class="fa fa-clipboard"></span></button>
                     </div>
+                </div>
+                <div class="col-4">
+                    <button class="btn btn-primary" id="base-color">Couleur de base</button>
                 </div>
             </div>
             <div class="row">
@@ -62,6 +74,31 @@
             <div id="preview"></div>
         </div>
     </div>
+    <div class="row">
+        <hr />
+        <h2>Arme de coloration massive</h2>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            <div class="input-group">
+                <span class="input-group-text">De</span>
+                <input id="gradient-start" value="#aabfdfff" data-jscolor="{}" />
+            </div>
+            <div class="input-group">
+                <span class="input-group-text">À</span>
+                <input id="gradient-end" value="#aabfdfff" data-jscolor="{}" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <div class="input-group">
+                <span class="input-group-text">Texte</span>
+                <input id="gradient-text" class="form-control" type="text" />
+                <button id="gradient-generate" class="btn btn-primary">Fais péter</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -75,17 +112,18 @@
       const raw = $('#raw-code')[0];
       const regexp = /\[([0-9a-fA-F]+)\]([^[\n]+)/gi;
       const code = $('#color-code')[0];
+      const baseColor = "#aabfdf";
 
-      new ClipboardJS('.btn');
+      const clipboard = new ClipboardJS('.btn');
       const picker = new JSColor('#color-picker', {
         format:'hexa',
+        palette: [ baseColor ],
         onChange: function() {
             $(code).val('[' + this.toHEXAString().replace('#', '') + ']');
         }
       });
 
       function  updatePreview() {
-        console.log($(raw).val());
         $(preview).html(
           $(raw).val()
             .replaceAll(regexp, '<span style="color: #$1;">$2</span>')
@@ -94,6 +132,53 @@
       }
 
       $(raw).on('keyup change', updatePreview);
+      $("#base-color").on('click', () => {
+        picker.fromString(baseColor);
+      })
+
+      $('#gradient-generate').on('click', () => {
+        const start = new Color($('#gradient-start').val());
+        const end = new Color($('#gradient-end').val());
+        const text = $('#gradient-text').val();
+        const textSize = text.length;
+
+        if (textSize <= 0) {
+          console.log('off');
+          return;
+        }
+
+        const diff = {
+          red: {
+            start: parseInt(start.srgb.r * 255),
+            end: parseInt(end.srgb.r * 255),
+            step: parseInt((end.srgb.r - start.srgb.r) * 255 / textSize),
+          },
+          green: {
+            start: parseInt(start.srgb.g * 255),
+            end: parseInt(end.srgb.g * 255),
+            step: parseInt((end.srgb.g - start.srgb.g) * 255 / textSize),
+          },
+          blue: {
+            start: parseInt(start.srgb.b * 255),
+            end: parseInt(end.srgb.b * 255),
+            step: parseInt((end.srgb.b - start.srgb.b) * 255 / textSize),
+          },
+        }
+
+        let rendered = '';
+        for (let i = 0; i < textSize; i++) {
+          const red = Number(diff.red.start + diff.red.step * i).toString(16).padStart(2, '0');
+          const green = Number(diff.green.start + diff.green.step * i).toString(16).padStart(2, '0');
+          const blue = Number(diff.blue.start + diff.blue.step * i).toString(16).padStart(2, '0');
+
+          rendered += '[' + red + green + blue + 'FF]' + text[i];
+        }
+
+        $(raw).val((index, currentText) => {
+          return currentText + rendered;
+        });
+        $(raw).trigger('change');
+      });
     })
 </script>
 </body>
