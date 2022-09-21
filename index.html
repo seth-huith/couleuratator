@@ -55,6 +55,9 @@
             padding: 6px 10px;
             font-style: italic;
         }
+        .character-count.error {
+            color: darkred;
+        }
     </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZST9R8QK4X"></script>
@@ -66,7 +69,7 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container" style="padding-bottom: 100px;">
     <h1>The Coloratoror(er)&trade;</h1>
     <div class="row">
         <div class="col-6">
@@ -112,11 +115,11 @@
     <div class="row">
         <div class="col-5">
             <div class="input-group">
-                <span class="input-group-text">De</span>
+                <span class="input-group-text">From</span>
                 <input id="gradient-start" value="#aabfdfff" data-jscolor="{}" />
             </div>
             <div class="input-group">
-                <span class="input-group-text">À</span>
+                <span class="input-group-text">To</span>
                 <input id="gradient-end" value="#aabfdfff" data-jscolor="{}" />
             </div>
         </div>
@@ -124,13 +127,21 @@
     <div class="row">
         <div class="col-8">
             <div class="input-group">
-                <span class="input-group-text">Texte</span>
+                <span class="input-group-text">Text</span>
                 <input id="gradient-text" class="form-control" type="text" />
                 <button id="gradient-generate" class="btn btn-primary">Boom</button>
             </div>
         </div>
     </div>
 </div>
+
+<footer class="text-center text-lg-start bg-white text-muted">
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.025);">
+        <div class="me-5 d-none d-lg-block">
+<!--            <span>Like the tool ? You can <a href="https://tpjr.us/seth-huith">leave a tip!</span>-->
+        </div>
+    </div>
+</footer>
 
 <script>
   jscolor.presets.default = {
@@ -236,7 +247,9 @@
         '[#83]': '👀',
         '[#84]': '👌',
       };
-      const ascii = '█▌▐░▒▓▒░◢◣◥◤↑↓←→↖↗↙↘△▲▽▼▶▷◀◁①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ';
+      const ascii = '█▌▐░▒▓▒░◢◣◥◤↑↓←→↖↗↙↘△▲▽▼▶▷◀◁①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ'
+        + '';
+        // + 'ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ';
 
       let i = 0;
       $.each(emotes, function (char, icon) {
@@ -274,7 +287,9 @@
             .replaceAll(emoteRegexp, (match) => emotes[match])
             .replaceAll(/\n/g, '</i></b></u></s><br>')
         );
-        $(count).html($(raw).val().length);
+        const charCount = $(raw).val().length;
+        $(count).toggleClass('error', charCount > 1000);
+        $(count).html(charCount);
       }
 
       $(raw).on('keyup change', function(event) {
