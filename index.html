@@ -18,10 +18,6 @@
             min-height: 254px;
             display: block;
         }
-        #color-code {
-            color: #aabfdf;
-            background: #1f204f;
-        }
         input, textarea {
             border-color: #212248 !important;
         }
@@ -36,6 +32,28 @@
         .form-control {
             border-width: 1px;
             border-color: #aabfdf !important;
+        }
+        .char-button {
+            margin: 4px 4px 4px 0;
+            width: 40px;
+        }
+        .emote-button {
+            font-size: 20px;
+            padding: 0 4px;
+            margin: 0 4px 4px 0;
+            width: 35px;
+        }
+        #single-generate {
+            height: 40px;
+            line-height: 26px;
+        }
+        #single-color {
+            border-radius: 6px 0 0 6px;
+        }
+        .character-count {
+            color: #aabfdf;
+            padding: 6px 10px;
+            font-style: italic;
         }
     </style>
     <!-- Google tag (gtag.js) -->
@@ -54,14 +72,13 @@
         <div class="col-6">
             <div class="row">
                 <div class="col">
-                    <textarea id="raw-code" class="form-control" rows="10"></textarea>
+                    <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <div class="input-group">
-                        <button class="btn btn-primary" data-clipboard-target="#raw-code">Copier le texte</button>
-                    </div>
+                    <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copier le texte</button>
+                    <span class="float-end character-count"><span id="character-count">0</span> / 1000</span>
                 </div>
             </div>
         </div>
@@ -70,29 +87,23 @@
         </div>
     </div>
     <div class="row">
-        <hr />
-        <h2>Texte coloré</h2>
-    </div>
-    <div class="row">
-        <div class="col-5">
-            <div class="input-group">
-                <span class="input-group-text">Couleur</span>
-                <input id="single-color" value="#aabfdfff" data-jscolor="{}" />
-            </div>
+        <div class="input-group">
+            <input id="single-color" value="#aabfdfff" data-jscolor="{}" />
+            <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
         </div>
     </div>
     <div class="row">
-        <div class="col-8">
-            <div class="input-group">
-                <span class="input-group-text">Texte</span>
-                <input id="single-text" class="form-control" type="text" />
-                <button id="single-generate" class="btn btn-primary">Ajouter</button>
-            </div>
+        <div class="col-6">
+            <button class="char-button btn btn-light" data-char="[B]"><b>B</b></button>
+            <button class="char-button btn btn-light" data-char="[I]"><i>I</i></button>
+            <button class="char-button btn btn-light" data-char="[U]"><u>U</u></button>
+            <button class="char-button btn btn-light" data-char="[S]"><s>S</s></button>
         </div>
     </div>
+    <div class="col" id="emotes">
+    </div>
     <div class="row">
-        <hr />
-        <h2>Arme de coloration massive (dégradé)</h2>
+        <h2><br />Gradient</h2>
     </div>
     <div class="row">
         <div class="col-5">
@@ -126,30 +137,147 @@
     $(function() {
       const preview = $('#preview')[0];
       const raw = $('#raw-code')[0];
-      const regexp = /\[([0-9a-fA-F]+)\]([^[\n]*)/gi;
-      const code = $('#color-code')[0];
+      const count = $('#character-count')[0];
+      const maxLineLength = 54;
+
+      const maxLineRegexp = /^([^\n]{54})(.+)$/gi;
+      const colorRegexp = /\[([0-9a-fA-F]{8})\]([^[\n]*)/gi;
+      const fontRegexp = /\[([IUBS])\]/gi;
+      const emoteRegexp = /(\[\#\d\d\])/gi;
+
       const baseColor = '#aabfdf';
       const baseColorFull = '[' + baseColor.replace('#', '') + 'ff]';
       const clipboard = new ClipboardJS('.btn');
+      const emotes = {
+        '[#01]': '💦',
+        '[#02]': '💥',
+        '[#03]': '💔',
+        '[#04]': '🍻',
+        '[#05]': '🌹',
+        '[#06]': '❤',
+        '[#07]': '😀',
+        '[#08]': '😭',
+        '[#09]': '😌',
+        '[#10]': '😵',
+        '[#11]': '😋',
+        '[#12]': '😂',
+        '[#13]': '😄',
+        '[#14]': '😫',
+        '[#15]': '😁',
+        '[#16]': '😃',
+        '[#17]': '😰',
+        '[#18]': '😢',
+        '[#19]': '😳',
+        '[#20]': '😤',
+        '[#21]': '🌚',
+        '[#22]': '😣',
+        '[#23]': '😯',
+        '[#24]': '😡',
+        '[#25]': '😠',
+        '[#26]': '😟',
+        '[#27]': '😞',
+        '[#28]': '😝',
+        '[#29]': '😈',
+        '[#30]': '😚',
+        '[#31]': '😘',
+        '[#32]': '😗',
+        '[#33]': '😖',
+        '[#34]': '🙁',
+        '[#35]': '😔',
+        '[#36]': '😇',
+        '[#37]': '😴',
+        '[#38]': '😓',
+        '[#39]': '😒',
+        '[#40]': '😑',
+        '[#41]': '🔥',
+        '[#42]': '😏',
+        '[#43]': '😎',
+        '[#44]': '😍',
+        '[#45]': '💋',
+        '[#46]': '✨',
+        '[#47]': '🎂',
+        '[#48]': '❓',
+        '[#49]': '🐷',
+        '[#50]': '😊',
+        '[#51]': '😃',
+        '[#52]': '☺',
+        '[#53]': '😉',
+        '[#54]': '😜',
+        '[#55]': '😨',
+        '[#56]': '😱',
+        '[#57]': '😪',
+        '[#58]': '😷',
+        '[#59]': '💤',
+        '[#60]': '🎵',
+        '[#61]': '💩',
+        '[#62]': '👍',
+        '[#63]': '👎',
+        '[#65]': '👊',
+        '[#66]': '✊',
+        '[#67]': '✌',
+        '[#68]': '👋',
+        '[#69]': '✋',
+        '[#70]': '👐',
+        '[#71]': '👇',
+        '[#72]': '👆',
+        '[#73]': '👉',
+        '[#74]': '👈',
+        '[#75]': '🙌',
+        '[#76]': '🙏',
+        '[#77]': '☝',
+        '[#78]': '👏',
+        '[#79]': '💪',
+        '[#80]': '👩‍❤️‍👨',
+        '[#81]': '👩‍❤️‍💋‍👨',
+        '[#82]': '🌹',
+        '[#83]': '👀',
+        '[#84]': '👌',
+      };
+
+      let i = 0;
+      $.each(emotes, function (char, icon) {
+        $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
+        if ((++i % 10) == 0) $('#emotes').append('<br>');
+      });
+
+      function checkLineLength(text) {
+        const lines = $(raw).val().split("\n");
+        const lastLine = lines.length > 0 ? lines[lines.length - 1] : null;
+
+        if ((lastLine.length + text.length) > maxLineLength) {
+          $(raw).val($(raw).val() + "\n");
+        }
+      }
+
+      function appendText(text) {
+        checkLineLength(text);
+
+        $(raw).val($(raw).val() + text);
+        $(raw).trigger('change');
+      }
 
       function  updatePreview() {
         $(preview).html(
           $(raw).val()
-            .replaceAll(regexp, '<span style="color: #$1;">$2</span>')
-            .replaceAll(/\n/g, '<br>')
+            .replaceAll(colorRegexp, '<span style="color: #$1;">$2</span>')
+            .replaceAll(fontRegexp, '<$1>')
+            .replaceAll(emoteRegexp, (match) => emotes[match])
+            .replaceAll(/\n/g, '</i></b></u></s><br>')
         );
+        $(count).html($(raw).val().length);
       }
 
-      $(raw).on('keyup change', updatePreview);
+      $(raw).on('keyup change', function(event) {
+        updatePreview();
+      });
+
+      $('body').on('click', '.char-button, .emote-button', function() {
+        appendText($(this).data('char'));
+      })
 
       $('#single-generate').on('click', () => {
         const code = $('#single-color').val().replace('#', '');
-        const text = $('#single-text').val();
-
-        $(raw).val((index, currentText) => {
-          return currentText + '[' + code + ']' + text + baseColorFull;
-        });
-        $(raw).trigger('change');
+        appendText('[' + code + ']');
       })
 
       $('#gradient-generate').on('click', () => {
@@ -191,10 +319,7 @@
 
         rendered += baseColorFull;
 
-        $(raw).val((index, currentText) => {
-          return currentText + rendered;
-        });
-        $(raw).trigger('change');
+        appendText(rendered);
       });
     })
 </script>
