@@ -77,7 +77,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copier le texte</button>
+                    <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copy</button>
                     <span class="float-end character-count"><span id="character-count">0</span> / 1000</span>
                 </div>
             </div>
@@ -100,7 +100,11 @@
             <button class="char-button btn btn-light" data-char="[S]"><s>S</s></button>
         </div>
     </div>
-    <div class="col" id="emotes">
+    <div class="row">
+        <div class="col-6" id="emotes">
+        </div>
+        <div class="col-6" id="ascii">
+        </div>
     </div>
     <div class="row">
         <h2><br />Gradient</h2>
@@ -140,7 +144,6 @@
       const count = $('#character-count')[0];
       const maxLineLength = 54;
 
-      const maxLineRegexp = /^([^\n]{54})(.+)$/gi;
       const colorRegexp = /\[([0-9a-fA-F]{8})\]([^[\n]*)/gi;
       const fontRegexp = /\[([IUBS])\]/gi;
       const emoteRegexp = /(\[\#\d\d\])/gi;
@@ -233,11 +236,17 @@
         '[#83]': '👀',
         '[#84]': '👌',
       };
+      const ascii = '█▌▐░▒▓▒░◢◣◥◤↑↓←→↖↗↙↘△▲▽▼▶▷◀◁①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ';
 
       let i = 0;
       $.each(emotes, function (char, icon) {
         $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
         if ((++i % 10) == 0) $('#emotes').append('<br>');
+      });
+      i = 0;
+      $.each(ascii.split(''), function (index, char) {
+        $('#ascii').append('<button class="btn btn-sm btn-light char-button" data-char="' + char + '">' + char + '</button>');
+        if ((++i % 10) == 0) $('#ascii').append('<br>');
       });
 
       function checkLineLength(text) {
@@ -254,6 +263,7 @@
 
         $(raw).val($(raw).val() + text);
         $(raw).trigger('change');
+        $(raw).focus();
       }
 
       function  updatePreview() {
