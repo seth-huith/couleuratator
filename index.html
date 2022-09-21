@@ -17,6 +17,13 @@
             padding: 8px 12px;
             min-height: 254px;
             display: block;
+            cursor: not-allowed;
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
         }
         input, textarea {
             border-color: #212248 !important;
@@ -86,7 +93,7 @@
             </div>
         </div>
         <div class="col-6">
-            <div id="preview"></div>
+            <div id="preview" title="Preview"></div>
         </div>
     </div>
     <div class="row">
