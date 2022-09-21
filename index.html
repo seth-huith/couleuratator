@@ -55,8 +55,8 @@
             padding: 6px 10px;
             font-style: italic;
         }
-        .character-count.error {
-            color: darkred;
+        #character-count.text-error {
+            color: red;
         }
     </style>
     <!-- Google tag (gtag.js) -->
@@ -135,10 +135,11 @@
     </div>
 </div>
 
-<footer class="text-center text-lg-start bg-white text-muted">
-    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.025);">
+<footer class="text-right text-lg-start bg-white text-muted">
+    <div class="text-end p-4" style="background-color: rgba(0, 0, 0, 0.025);">
         <div class="me-5 d-none d-lg-block">
 <!--            <span>Like the tool ? You can <a href="https://tpjr.us/seth-huith">leave a tip!</span>-->
+            <span><a href="https://tpjr.us/seth-huith" title="Like the tool ? Let's have a coffee !"><i class="fa fa-coffee"></i></span>
         </div>
     </div>
 </footer>
@@ -288,8 +289,8 @@
             .replaceAll(/\n/g, '</i></b></u></s><br>')
         );
         const charCount = $(raw).val().length;
-        $(count).toggleClass('error', charCount > 1000);
         $(count).html(charCount);
+        $(count).toggleClass('text-error', charCount > 1000);
       }
 
       $(raw).on('keyup change', function(event) {
