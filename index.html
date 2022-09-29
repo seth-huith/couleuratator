@@ -10,10 +10,14 @@
     <style>
         body {
             background: #313f64;
+            max-width: 700px;
+        }
+        button {
+          white-space: nowrap;
         }
         #preview {
             background: #1f204f;
-            color: #aabfdf;
+            color: #cadfff;
             padding: 8px 12px;
             min-height: 254px;
             display: block;
@@ -29,20 +33,24 @@
             border-color: #212248 !important;
         }
         h1, h2 {
-            color: #aabfdf;
+            color: #cadfff;
             margin: 20px 0;
         }
         [data-jscolor] {
             border-width: 1px;
-            border-color: #aabfdf !important;
+            border-color: #cadfff !important;
         }
         .form-control {
             border-width: 1px;
-            border-color: #aabfdf !important;
+            border-color: #cadfff !important;
         }
         .char-button {
             margin: 4px 4px 4px 0;
             width: 40px;
+        }
+        .char-button.btn.default-color {
+          margin: 0;
+          border-width: 0;
         }
         .emote-button {
             font-size: 20px;
@@ -58,12 +66,16 @@
             border-radius: 6px 0 0 6px;
         }
         .character-count {
-            color: #aabfdf;
+            color: #cadfff;
             padding: 6px 10px;
             font-style: italic;
         }
         #character-count.text-error {
             color: red;
+        }
+        .btn.default-color {
+          background-color: #cadfff;
+          width: auto;
         }
     </style>
     <!-- Google tag (gtag.js) -->
@@ -98,16 +110,21 @@
     </div>
     <div class="row">
         <div class="input-group">
-            <input id="single-color" value="#aabfdfff" data-jscolor="{}" />
-            <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+          <input id="single-color" value="#cadfffff" data-jscolor="{}" />
+          <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+          <button class="char-button btn btn-light default-color" data-char="[cadfffff]">Default</button>
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="input-group">
             <button class="char-button btn btn-light" data-char="[B]"><b>B</b></button>
+            <button class="char-button btn btn-secondary" data-char="[/B]"><b>-B</b></button>
             <button class="char-button btn btn-light" data-char="[I]"><i>I</i></button>
+            <button class="char-button btn btn-secondary" data-char="[/I]"><i>-I</i></button>
             <button class="char-button btn btn-light" data-char="[U]"><u>U</u></button>
+            <button class="char-button btn btn-secondary" data-char="[/U]"><u>-U</u></button>
             <button class="char-button btn btn-light" data-char="[S]"><s>S</s></button>
+            <button class="char-button btn btn-secondary" data-char="[/S]"><s>-S</s></button>
         </div>
     </div>
     <div class="row">
@@ -123,11 +140,11 @@
         <div class="col-5">
             <div class="input-group">
                 <span class="input-group-text">From</span>
-                <input id="gradient-start" value="#aabfdfff" data-jscolor="{}" />
+                <input id="gradient-start" value="#cadfffff" data-jscolor="{}" />
             </div>
             <div class="input-group">
                 <span class="input-group-text">To</span>
-                <input id="gradient-end" value="#aabfdfff" data-jscolor="{}" />
+                <input id="gradient-end" value="#cadfffff" data-jscolor="{}" />
             </div>
         </div>
     </div>
@@ -142,14 +159,15 @@
     </div>
 </div>
 
-<footer class="text-right text-lg-start bg-white text-muted">
-    <div class="text-end p-4" style="background-color: rgba(0, 0, 0, 0.025);">
-        <div class="me-5 d-none d-lg-block">
-<!--            <span>Like the tool ? You can <a href="https://tpjr.us/seth-huith">leave a tip!</span>-->
-            <span><a href="https://tpjr.us/seth-huith" title="Like the tool ? Let's have a coffee !"><i class="fa fa-coffee"></i></span>
-        </div>
+<!--<footer class="text-right text-lg-start bg-white text-muted">
+  <div class="text-end p-4" style="background-color: rgba(0, 0, 0, 0.025);">
+    <div class="me-5 d-none d-lg-block">
+      <span>Like the tool ? You can <a href="https://tpjr.us/seth-huith">leave a tip!</span>
+      <span><a href="https://tpjr.us/seth-huith" title="Like the tool ? Let's have a coffee !"><i
+            class="fa fa-coffee"></i></span>
     </div>
-</footer>
+  </div>
+</footer>-->
 
 <script>
   jscolor.presets.default = {
@@ -167,7 +185,7 @@
       const fontRegexp = /\[([IUBS])\]/gi;
       const emoteRegexp = /(\[\#\d\d\])/gi;
 
-      const baseColor = '#aabfdf';
+      const baseColor = '#cadfff';
       const baseColorFull = '[' + baseColor.replace('#', '') + 'ff]';
       const clipboard = new ClipboardJS('.btn');
       const emotes = {
@@ -261,12 +279,12 @@
       let i = 0;
       $.each(emotes, function (char, icon) {
         $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
-        if ((++i % 10) == 0) $('#emotes').append('<br>');
+        if ((++i % 8) == 0) $('#emotes').append('<br>');
       });
       i = 0;
       $.each(ascii.split(''), function (index, char) {
         $('#ascii').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + char + '</button>');
-        if ((++i % 10) == 0) $('#ascii').append('<br>');
+        if ((++i % 8) == 0) $('#ascii').append('<br>');
       });
 
       function checkLineLength(text) {
