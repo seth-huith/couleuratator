@@ -10,7 +10,7 @@
     <style>
         body {
             background: #313f64;
-            max-width: 1280px;
+            max-width: 1040px;
             margin: auto;
         }
         button {
@@ -183,7 +183,7 @@
       const maxLineLength = 54;
 
       const colorRegexp = /\[([0-9a-fA-F]{8})\]([^[\n]*)/gi;
-      const fontRegexp = /\[([IUBS])\]/gi;
+      const fontRegexp = /\[(\/?[IUBS])\]/gi;
       const emoteRegexp = /(\[\#\d\d\])/gi;
 
       const baseColor = '#cadfff';
@@ -280,12 +280,10 @@
       let i = 0;
       $.each(emotes, function (char, icon) {
         $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
-        //if ((++i % 8) == 0) $('#emotes').append('<br>');
       });
       i = 0;
       $.each(ascii.split(''), function (index, char) {
-        $('#ascii').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + char + '</button>');
-        //if ((++i % 8) == 0) $('#ascii').append('<br>');
+        $('#ascii').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + char + '</button>');        
       });
 
       function checkLineLength(text) {
