@@ -392,7 +392,7 @@
       $('#bottles .bottle').each(function() {
         let colors = [];
         $(this).find('.color').each(function() {
-          colors.push($(this).data('color'));
+          colors.push($(this).data('color') ? $(this).data('color') : 'EMPTY');
         })
         data.push(colors);
       });
