@@ -377,7 +377,8 @@
         const colorKey = $(this).data('color');
         const colorCount = colorCounts[colorKey];
 
-        $(this).find('.number')
+        $(this).toggle(colorCount > 0)
+          .find('.number')
           .toggleClass('text-success', colorCount === 4)
           .toggleClass('text-warning', colorCount !== 4 && colorCount > 0)
           .html(colorCount);
