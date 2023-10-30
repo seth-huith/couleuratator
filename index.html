@@ -23,6 +23,9 @@
         #tabs .nav-link {
             color: #cadfff;
         }
+        #tabs .nav-link.active {
+          color: #313f64;
+        }
         button {
           white-space: nowrap;
         }
@@ -137,6 +140,13 @@
             width: 60px;
             border-top: 1px dashed #aabfdf;
             cursor: pointer;
+            background: repeating-linear-gradient(
+              45deg,
+            #39448a,
+            #39448a 10.5px,
+            #283163 10.5px,
+            #283163 21px
+            );
         }
         #bottles .bottle .color {
             bottom: 0;
@@ -151,9 +161,8 @@
             bottom: 180px;
         }
         #color-modal .modal-dialog {
-            width: 192px;
+            width: 272px;
             margin-top: 160px;
-            margin-left: 20%;
         }
         #color-modal .modal-body {
             padding: 3px;
@@ -161,8 +170,8 @@
         #color-modal .color-button {
             cursor: pointer;
             display: inline-block;
-            height: 40px;
-            width: 40px;
+            height: 60px;
+            width: 60px;
             margin: 3px;
         }
         #color-json {
@@ -183,10 +192,10 @@
 <body>
     <ul class="nav nav-tabs" id="tabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-content" type="button" role="tab" aria-controls="text-content" aria-selected="true">Text</button>
+            <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-content" type="button" role="tab" aria-controls="text-content" aria-selected="true">Texte</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tubes-tab" data-bs-toggle="tab" data-bs-target="#tubes-content" type="button" role="tab" aria-controls="tubes-content" aria-selected="false">Test tubes</button>
+            <button class="nav-link" id="tubes-tab" data-bs-toggle="tab" data-bs-target="#tubes-content" type="button" role="tab" aria-controls="tubes-content" aria-selected="false">Eprouvettes</button>
         </li>
     </ul>
     <div class="tab-content" id="tab-contents">
@@ -201,7 +210,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copy</button>
+                            <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copier</button>
                             <span class="float-end character-count"><span id="character-count">0</span> / 1000</span>
                         </div>
                     </div>
@@ -214,7 +223,7 @@
                 <div class="input-group">
                     <input id="single-color" value="#cadfffff" data-jscolor="{}" />
                     <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
-                    <button class="char-button btn btn-light default-color" data-char="[ffffffff]">Default</button>
+                    <button class="char-button btn btn-light default-color" data-char="[ffffffff]">Blanc</button>
                 </div>
             </div>
             <div class="row">
@@ -235,6 +244,7 @@
                 <div class="col-6" id="ascii">
                 </div>
             </div>
+            <!--
             <div class="row">
                 <h2><br />Gradient</h2>
             </div>
@@ -259,6 +269,7 @@
                     </div>
                 </div>
             </div>
+          -->
         </div>
         </div>
         <div class="tab-pane fade" id="tubes-content" role="tabpanel" aria-labelledby="tubes-tab">
@@ -271,7 +282,18 @@
                     <div class="col-12">
                         <button id="add-bottle" class="btn btn-primary">+</button>
                         <button id="remove-bottle" class="btn btn-primary">-</button>
-                        <button id="generate-json" class="btn btn-primary">Generate json</button>
+                        <button id="generate-json" class="btn btn-primary">Json</button>
+                    </div>
+                    <div class="col-12 color-errors hide">
+                      <div class="invalid-feedback incomplete-tubes">
+                        Certaines éprouvettes sont incomplètes.
+                      </div>
+                      <div class="invalid-feedback empty-tubes">
+                        Au moins 2 éprouvettes vides sont nécessaires.
+                      </div>
+                      <div class="invalid-feedback incomplete-colors">
+                        Chaque couleur doit être présente 4 fois.
+                      </div>
                     </div>
                     <div class="col-12">
                         <textarea class="form-control" id="color-json"></textarea>
@@ -293,10 +315,10 @@
 
 <script id="bottle-template" type="text/template">
     <div class="bottle">
-        <div class="color color-1"></div>
-        <div class="color color-2"></div>
-        <div class="color color-3"></div>
-        <div class="color color-4"></div>
+        <div class="color" data-color="EMPTY"></div>
+        <div class="color" data-color="EMPTY"></div>
+        <div class="color" data-color="EMPTY"></div>
+        <div class="color" data-color="EMPTY"></div>
     </div>
 </script>
 <script id="bottle-color-template" type="text/template">
@@ -314,20 +336,20 @@
     const colorContainer = $('#bottle-colors');
     const modalContent = $('#color-modal .modal-body');
     const colors = {
-      GREEN: '#126165',
-      ORANGE: '#f28a29',
-      BLUE: '#0a5cd9',
-      YELLOW: '#ecba03',
-      RED: '#b8170d',
-      LGREEN: '#48be2c',
-      LBLUE: '#5fa9ea',
-      BROWN: '#681c36',
-      PURPLE: '#892ed1',
-      PALE: '#ffd1b7',
-      PINK: '#e099df',
-      FRUIT: '#eb5e7e',
-      BLURPLE: '#463bc6',
-      GREY: '#6a696e'
+      A: '#126165', // GREEN
+      B: '#f28a29', // ORANGE
+      C: '#0a5cd9', // BLUE
+      D: '#ecba03', // YELLOW
+      E: '#b8170d', // RED
+      F: '#48be2c', // LGREEN
+      G: '#5fa9ea', // LBLUE
+      H: '#681c36', // BROWN
+      I: '#892ed1', // PURPLE
+      J: '#ffd1b7', // PALE
+      K: '#e099df', // PINK
+      L: '#eb5e7e', // FRUIT
+      M: '#463bc6', // BLURPLE
+      N: '#6a696e'  // GREY
     };
 
     for (let i = 0; i < 12; i++) {
@@ -386,6 +408,39 @@
     };
     countColors();
 
+    const checkEntries = function(data) {
+      let emptyTubes = 0;
+      let incompleteTubes = 0;
+      let incompleteColors =  $('#bottle-colors .text-warning').length;
+
+      $(data).each(function(key, values) {
+        let tube = values;
+        let empties = 0;
+        $(values).each(function(key, value) {
+          if (value === 'EMPTY') {
+            empties++;
+          }
+        });
+
+        if (empties > 0) {
+          if (empties === 4) {
+            emptyTubes++;
+          } else {
+            incompleteTubes++;
+          }
+        }
+      });
+
+      if (emptyTubes < 2 || incompleteTubes > 0 || incompleteColors > 0) {
+        $('.color-errors .empty-tubes').toggle(emptyTubes < 2);
+        $('.color-errors .incomplete-tubes').toggle(incompleteTubes > 0);
+        $('.color-errors .incomplete-colors').toggle(incompleteColors > 0);
+        $('.color-errors').show();
+
+        return false;
+      }
+    };
+
     const colorModal = new bootstrap.Modal(document.getElementById('color-modal'));
     let colorElement = null;
 
@@ -402,6 +457,7 @@
       $('#color-json').hide()
 
       countColors();
+      $('.color-errors').hide();
     });
 
     $('#generate-json').on('click', function() {
@@ -409,10 +465,14 @@
       $('#bottles .bottle').each(function() {
         let colors = [];
         $(this).find('.color').each(function() {
-          colors.push($(this).data('color') ? $(this).data('color') : 'EMPTY');
+          colors.push($(this).data('color'));
         })
         data.push(colors);
       });
+
+      if (checkEntries(data) === false) {
+        return;
+      }      
 
       $('#color-json').show().val(JSON.stringify({bottles: data}));
     });
