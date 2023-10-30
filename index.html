@@ -13,6 +13,9 @@
             max-width: 1040px;
             margin: auto;
         }
+        body.modal-open {
+            overflow: inherit !important;
+        }
         button {
           white-space: nowrap;
         }
@@ -76,9 +79,92 @@
             color: red;
         }
         .btn.default-color {
-          /*background-color: #cadfff;*/
-          background-color: #ffffff;
-          width: auto;
+            /*background-color: #cadfff;*/
+            background-color: #ffffff;
+            width: auto;
+        }
+        #bottle-colors {
+            display: block;
+            width: 200px;
+            float: left;
+        }
+        #bottle-colors .color-div {
+            display: flex;
+            align-items: center;
+            width: 80px;
+            height: 40px;
+            float: left;
+        }
+        #bottle-colors .color-div .color {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+        }
+        #bottle-colors .color-div .number {
+            display: inline-block;
+            color: #aabfdf;
+            font-size: 20px;
+            padding-left: 8px;
+            line-height: 30px;
+        }
+        #bottles {
+            display: block;
+            text-align: center;
+            width: 400px;
+            margin-right: 40px;
+            float: left;
+        }
+        #bottles .bottle {
+            border: 1px solid #aabfdf;
+            border-width: 0 2px 2px;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 170px;
+            margin: 0 10px 30px;
+            overflow: hidden;
+        }
+        #bottles .bottle .color {
+            position: absolute;
+            left: 0;
+            height: 40px;
+            width: 40px;
+            /*background: red;*/
+            border-top: 1px dashed #aabfdf;
+            cursor: pointer;
+        }
+        #bottles .bottle .color {
+            bottom: 0;
+        }
+        #bottles .bottle .color + .color {
+            bottom: 40px;
+        }
+        #bottles .bottle .color + .color + .color {
+            bottom: 80px;
+        }
+        #bottles .bottle .color + .color + .color + .color {
+            bottom: 120px;
+        }
+        #color-modal .modal-dialog {
+            width: 192px;
+            margin-top: 120px;
+            margin-left: 20%;
+        }
+        #color-modal .modal-body {
+            padding: 3px;
+        }
+        #color-modal .color-button {
+            cursor: pointer;
+            display: inline-block;
+            height: 40px;
+            width: 40px;
+            margin: 3px;
+        }
+        #color-json {
+            width: 570px;
+            margin-top: 30px;
+            display: none;
         }
     </style>
     <!-- Google tag (gtag.js) -->
@@ -160,17 +246,161 @@
             </div>
         </div>
     </div>
+    <hr />
+    <div class="row">
+        <h2><br />Test Tubes</h2>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div id="bottles"></div>
+            <div id="bottle-colors"></div>
+        </div>
+        <div class="col-12">
+            <button id="add-bottle" class="btn btn-primary">+</button>
+            <button id="remove-bottle" class="btn btn-primary">-</button>
+            <button id="generate-json" class="btn btn-primary">Generate json</button>
+        </div>
+        <div class="col-12">
+            <textarea class="form-control" id="color-json"></textarea>
+        </div>
+    </div>
+
+    <div class="modal" id="color-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!--<footer class="text-right text-lg-start bg-white text-muted">
-  <div class="text-end p-4" style="background-color: rgba(0, 0, 0, 0.025);">
-    <div class="me-5 d-none d-lg-block">
-      <span>Like the tool ? You can <a href="https://tpjr.us/seth-huith">leave a tip!</span>
-      <span><a href="https://tpjr.us/seth-huith" title="Like the tool ? Let's have a coffee !"><i
-            class="fa fa-coffee"></i></span>
+<script id="bottle-template" type="text/template">
+    <div class="bottle">
+        <div class="color color-1"></div>
+        <div class="color color-2"></div>
+        <div class="color color-3"></div>
+        <div class="color color-4"></div>
     </div>
-  </div>
-</footer>-->
+</script>
+<script id="bottle-color-template" type="text/template">
+    <div class="color-div">
+        <div class="color"></div>
+        <span class="number"></span>
+    </div>
+</script>
+
+<script>
+  $(function () {
+    const bottle = $('#bottle-template').html();
+    const bottleColor = $('#bottle-color-template').html();
+    const bottleContainer = $('#bottles');
+    const colorContainer = $('#bottle-colors');
+    const modalContent = $('#color-modal .modal-body');
+    const colors = {
+      GREEN: '#126165',
+      ORANGE: '#f28a29',
+      BLUE: '#0a5cd9',
+      YELLOW: '#ecba03',
+      RED: '#b8170d',
+      LGREEN: '#48be2c',
+      LBLUE: '#5fa9ea',
+      BROWN: '#681c36',
+      PURPLE: '#892ed1',
+      PALE: '#ffd1b7',
+      PINK: '#e099df',
+      FRUIT: '#eb5e7e',
+      BLURPLE: '#463bc6',
+      GREY: '#6a696e'
+    };
+
+    for (let i = 0; i < 12; i++) {
+      bottleContainer.append(bottle);
+    }
+
+    $.each(colors, function (key, value) {
+      const node = $(bottleColor);
+      node.attr('data-color', key);
+      node.find('.color').css({background: value});
+
+      colorContainer.append(node);
+
+      const button = $('<div class="color-button"></div>');
+      button.attr('data-color', key);
+      button.css({background: value});
+
+      console.log(button);
+      modalContent.append(button);
+    });
+
+    $('#add-bottle').on('click', function () {
+      bottleContainer.append(bottle);
+    });
+    $('#remove-bottle').on('click', function () {
+      bottleContainer.find('.bottle').last().remove();
+    });
+
+    let colorCounts = {};
+    const emptyColorCounts = function() {
+      colorCounts = {};
+      $.each(colors, function (key, value) {
+        colorCounts[key] = 0;
+      })
+    };
+
+    const countColors = function() {
+      emptyColorCounts();
+      $('#bottles .bottle .color').each(function() {
+        let currentColor = $(this).data('color');
+        if (currentColor) {
+            colorCounts[currentColor]++;
+        }
+      });
+
+      $('#bottle-colors .color-div').each(function() {
+        const colorKey = $(this).data('color');
+        const colorCount = colorCounts[colorKey];
+
+        $(this).find('.number')
+          .toggleClass('text-success', colorCount === 4)
+          .toggleClass('text-warning', colorCount !== 4 && colorCount > 0)
+          .html(colorCount);
+      })
+    };
+    countColors();
+
+    const colorModal = new bootstrap.Modal(document.getElementById('color-modal'));
+    let colorElement = null;
+
+    $('#bottles').on('click', '.color', function() {
+      colorElement = $(this);
+      colorModal.show();
+    });
+    $('#color-modal').on('click', '.color-button', function() {
+      if (colorElement) {
+        colorElement.data('color', $(this).data('color'))
+        colorElement.css({background: colors[$(this).data('color')]});
+      }
+      colorModal.hide();
+      $('#color-json').hide()
+
+      countColors();
+    });
+
+    $('#generate-json').on('click', function() {
+      let data = [['FILLER', 'FILLER', 'FILLER', 'FILLER']];
+      $('#bottles .bottle').each(function() {
+        let colors = [];
+        $(this).find('.color').each(function() {
+          colors.push($(this).data('color'));
+        })
+        data.push(colors);
+      });
+
+      $('#color-json').show().val(JSON.stringify(data));
+    });
+  });
+</script>
 
 <script>
   jscolor.presets.default = {
@@ -285,7 +515,7 @@
       });
       i = 0;
       $.each(ascii.split(''), function (index, char) {
-        $('#ascii').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + char + '</button>');        
+        $('#ascii').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + char + '</button>');
       });
 
       function checkLineLength(text) {
