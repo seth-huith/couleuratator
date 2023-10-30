@@ -16,12 +16,18 @@
         body.modal-open {
             overflow: inherit !important;
         }
+        #tabs {
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        #tabs .nav-link {
+            color: #cadfff;
+        }
         button {
           white-space: nowrap;
         }
         #preview {
             background: #1f204f;
-            /*color: #cadfff;*/
             color: #ffffff;
             padding: 8px 12px;
             min-height: 254px;
@@ -79,7 +85,6 @@
             color: red;
         }
         .btn.default-color {
-            /*background-color: #cadfff;*/
             background-color: #ffffff;
             width: auto;
         }
@@ -91,46 +96,45 @@
         #bottle-colors .color-div {
             display: flex;
             align-items: center;
-            width: 80px;
-            height: 40px;
+            width: 90px;
+            height: 60px;
             float: left;
         }
         #bottle-colors .color-div .color {
             display: inline-block;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
         }
         #bottle-colors .color-div .number {
             display: inline-block;
             color: #aabfdf;
             font-size: 20px;
             padding-left: 8px;
-            line-height: 30px;
+            line-height: 40px;
         }
         #bottles {
             display: block;
             text-align: center;
-            width: 400px;
+            width: 600px;
             margin-right: 40px;
             float: left;
         }
         #bottles .bottle {
             border: 1px solid #aabfdf;
             border-width: 0 2px 2px;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 30px 30px;
             position: relative;
             display: inline-block;
-            width: 40px;
-            height: 170px;
-            margin: 0 10px 30px;
+            width: 60px;
+            height: 260px;
+            margin: 0 15px 40px;
             overflow: hidden;
         }
         #bottles .bottle .color {
             position: absolute;
             left: 0;
-            height: 40px;
-            width: 40px;
-            /*background: red;*/
+            height: 60px;
+            width: 60px;
             border-top: 1px dashed #aabfdf;
             cursor: pointer;
         }
@@ -138,17 +142,17 @@
             bottom: 0;
         }
         #bottles .bottle .color + .color {
-            bottom: 40px;
+            bottom: 60px;
         }
         #bottles .bottle .color + .color + .color {
-            bottom: 80px;
+            bottom: 120px;
         }
         #bottles .bottle .color + .color + .color + .color {
-            bottom: 120px;
+            bottom: 180px;
         }
         #color-modal .modal-dialog {
             width: 192px;
-            margin-top: 120px;
+            margin-top: 160px;
             margin-left: 20%;
         }
         #color-modal .modal-body {
@@ -177,91 +181,103 @@
     </script>
 </head>
 <body>
-<div class="container-fluid" style="padding-bottom: 100px;">
-    <h1>The Coloratoror(er)&trade;</h1>
-    <div class="row">
-        <div class="col-6">
+    <ul class="nav nav-tabs" id="tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-content" type="button" role="tab" aria-controls="text-content" aria-selected="true">Text</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tubes-tab" data-bs-toggle="tab" data-bs-target="#tubes-content" type="button" role="tab" aria-controls="tubes-content" aria-selected="false">Test tubes</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="tab-contents">
+        <div class="tab-pane fade show active" id="text-content" role="tabpanel" aria-labelledby="text-tab">
+            <div class="container-fluid" style="padding-bottom: 100px;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col">
+                            <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copy</button>
+                            <span class="float-end character-count"><span id="character-count">0</span> / 1000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div id="preview" title="Preview"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-group">
+                    <input id="single-color" value="#cadfffff" data-jscolor="{}" />
+                    <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                    <button class="char-button btn btn-light default-color" data-char="[ffffffff]">Default</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-group">
+                    <button class="char-button btn btn-light" data-char="[B]"><b>B</b></button>
+                    <button class="char-button btn btn-secondary" data-char="[/B]"><b>-B</b></button>
+                    <button class="char-button btn btn-light" data-char="[I]"><i>I</i></button>
+                    <button class="char-button btn btn-secondary" data-char="[/I]"><i>-I</i></button>
+                    <button class="char-button btn btn-light" data-char="[U]"><u>U</u></button>
+                    <button class="char-button btn btn-secondary" data-char="[/U]"><u>-U</u></button>
+                    <button class="char-button btn btn-light" data-char="[S]"><s>S</s></button>
+                    <button class="char-button btn btn-secondary" data-char="[/S]"><s>-S</s></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6" id="emotes">
+                </div>
+                <div class="col-6" id="ascii">
+                </div>
+            </div>
+            <div class="row">
+                <h2><br />Gradient</h2>
+            </div>
             <div class="row">
                 <div class="col">
-                    <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
+                    <div class="input-group">
+                        <span class="input-group-text">From</span>
+                        <input id="gradient-start" value="#cadfffff" data-jscolor="{}" />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">To</span>
+                        <input id="gradient-end" value="#cadfffff" data-jscolor="{}" />
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copy</button>
-                    <span class="float-end character-count"><span id="character-count">0</span> / 1000</span>
+                    <div class="input-group">
+                        <span class="input-group-text">Text</span>
+                        <input id="gradient-text" class="form-control" type="text" />
+                        <button id="gradient-generate" class="btn btn-primary">Boom</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-6">
-            <div id="preview" title="Preview"></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="input-group">
-          <input id="single-color" value="#cadfffff" data-jscolor="{}" />
-          <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
-          <button class="char-button btn btn-light default-color" data-char="[ffffffff]">Default</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="input-group">
-            <button class="char-button btn btn-light" data-char="[B]"><b>B</b></button>
-            <button class="char-button btn btn-secondary" data-char="[/B]"><b>-B</b></button>
-            <button class="char-button btn btn-light" data-char="[I]"><i>I</i></button>
-            <button class="char-button btn btn-secondary" data-char="[/I]"><i>-I</i></button>
-            <button class="char-button btn btn-light" data-char="[U]"><u>U</u></button>
-            <button class="char-button btn btn-secondary" data-char="[/U]"><u>-U</u></button>
-            <button class="char-button btn btn-light" data-char="[S]"><s>S</s></button>
-            <button class="char-button btn btn-secondary" data-char="[/S]"><s>-S</s></button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6" id="emotes">
-        </div>
-        <div class="col-6" id="ascii">
-        </div>
-    </div>
-    <div class="row">
-        <h2><br />Gradient</h2>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div class="input-group">
-                <span class="input-group-text">From</span>
-                <input id="gradient-start" value="#cadfffff" data-jscolor="{}" />
+        <div class="tab-pane fade" id="tubes-content" role="tabpanel" aria-labelledby="tubes-tab">
+            <div class="container-fluid" style="padding-bottom: 100px;">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="bottles"></div>
+                        <div id="bottle-colors"></div>
+                    </div>
+                    <div class="col-12">
+                        <button id="add-bottle" class="btn btn-primary">+</button>
+                        <button id="remove-bottle" class="btn btn-primary">-</button>
+                        <button id="generate-json" class="btn btn-primary">Generate json</button>
+                    </div>
+                    <div class="col-12">
+                        <textarea class="form-control" id="color-json"></textarea>
+                    </div>
+                </div>
             </div>
-            <div class="input-group">
-                <span class="input-group-text">To</span>
-                <input id="gradient-end" value="#cadfffff" data-jscolor="{}" />
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div class="input-group">
-                <span class="input-group-text">Text</span>
-                <input id="gradient-text" class="form-control" type="text" />
-                <button id="gradient-generate" class="btn btn-primary">Boom</button>
-            </div>
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <h2><br />Test Tubes</h2>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <div id="bottles"></div>
-            <div id="bottle-colors"></div>
-        </div>
-        <div class="col-12">
-            <button id="add-bottle" class="btn btn-primary">+</button>
-            <button id="remove-bottle" class="btn btn-primary">-</button>
-            <button id="generate-json" class="btn btn-primary">Generate json</button>
-        </div>
-        <div class="col-12">
-            <textarea class="form-control" id="color-json"></textarea>
         </div>
     </div>
 
@@ -397,7 +413,7 @@
         data.push(colors);
       });
 
-      $('#color-json').show().val(JSON.stringify(data));
+      $('#color-json').show().val(JSON.stringify({bottles: data}));
     });
   });
 </script>
