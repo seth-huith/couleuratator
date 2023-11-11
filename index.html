@@ -190,6 +190,18 @@
           color: #cadfff;
           display: none;
         }
+        #solve-moves li {
+          list-style-type: none;
+          padding-left: 0;
+          margin-left: -20px;
+        }
+        #solve-moves input {
+          margin-right: 6px;
+        }
+        #solve-moves .checked {
+          text-decoration: line-through;
+          font-style: italic;
+        }
     </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZST9R8QK4X"></script>
@@ -687,10 +699,11 @@
       });
 
       if (checkEntries(data) === false) {
-        return;
+        //return;
       }      
 
-      const result = solve(data);
+      //const result = solve(data);
+      const result = solve(bottles);
       console.log(result);
 
       if (result.moves.length > 0) {
@@ -700,10 +713,15 @@
         $('#solve-moves').html('');
         $('#solve-puzzle').html(result.puzzle);
         $(result.moves).each((index, move) => {
-          $('#solve-moves').append('<li>' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
+          $('#solve-moves').append('<li><input type="checkbox" />' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
         });
       }      
     });
+
+    $('#solve-moves').on('change', 'input', function(event) {
+      $(this).closest('li').toggleClass('checked', $(this).is(':checked'));
+    });
+    
   });
 </script>
 
