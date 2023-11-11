@@ -129,7 +129,7 @@
             position: relative;
             display: inline-block;
             width: 60px;
-            height: 260px;
+            height: 280px;
             margin: 0 15px 40px;
             overflow: hidden;
         }
@@ -160,6 +160,18 @@
         #bottles .bottle .color + .color + .color + .color {
             bottom: 180px;
         }
+        #bottles .bottle .index {
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: center;
+            height: 30px;
+            width: 60px;
+            color: #cadfff;
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: -8px;
+        }
         #color-modal .modal-dialog {
             width: 272px;
             margin-top: 160px;
@@ -174,10 +186,9 @@
             width: 60px;
             margin: 3px;
         }
-        #color-json {
-            width: 570px;
-            margin-top: 30px;
-            display: none;
+        #solve {
+          color: #cadfff;
+          display: none;
         }
     </style>
     <!-- Google tag (gtag.js) -->
@@ -191,15 +202,16 @@
 </head>
 <body>
     <ul class="nav nav-tabs" id="tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-content" type="button" role="tab" aria-controls="text-content" aria-selected="true">Texte</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tubes-tab" data-bs-toggle="tab" data-bs-target="#tubes-content" type="button" role="tab" aria-controls="tubes-content" aria-selected="false">Eprouvettes</button>
-        </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tubes-tab" data-bs-toggle="tab" data-bs-target="#tubes-content" type="button" role="tab" aria-controls="tubes-content" aria-selected="false">Eprouvettes</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-content" type="button" role="tab" aria-controls="text-content" aria-selected="true">Texte</button>
+      </li>
+        
     </ul>
     <div class="tab-content" id="tab-contents">
-        <div class="tab-pane fade show active" id="text-content" role="tabpanel" aria-labelledby="text-tab">
+        <div class="tab-pane fade" id="text-content" role="tabpanel" aria-labelledby="text-tab">
             <div class="container-fluid" style="padding-bottom: 100px;">
             <div class="row">
                 <div class="col-6">
@@ -272,7 +284,7 @@
           -->
         </div>
         </div>
-        <div class="tab-pane fade" id="tubes-content" role="tabpanel" aria-labelledby="tubes-tab">
+        <div class="tab-pane fade active show" id="tubes-content" role="tabpanel" aria-labelledby="tubes-tab">
             <div class="container-fluid" style="padding-bottom: 100px;">
                 <div class="row">
                     <div class="col-12">
@@ -282,7 +294,7 @@
                     <div class="col-12">
                         <button id="add-bottle" class="btn btn-primary">+</button>
                         <button id="remove-bottle" class="btn btn-primary">-</button>
-                        <button id="generate-json" class="btn btn-primary">Json</button>
+                        <button id="solve-button" class="btn btn-primary">Solution</button>
                     </div>
                     <div class="col-12 color-errors hide">
                       <div class="invalid-feedback incomplete-tubes">
@@ -294,9 +306,17 @@
                       <div class="invalid-feedback incomplete-colors">
                         Chaque couleur doit être présente 4 fois.
                       </div>
+                      <div class="invalid-feedback missing-tubes">
+                        Des tubes doivent être saisis.
+                      </div>
                     </div>
-                    <div class="col-12">
-                        <textarea class="form-control" id="color-json"></textarea>
+                    <div class="col-12" id="solve">
+                      <b>Solution : </b>
+                      <ul id="solve-moves"></ul>
+                      <small><i>
+                        <span id="solve-time"></span> secondes<br>
+                        Complexité <span id="solve-complexity"></span>
+                      </i></small>
                     </div>
                 </div>
             </div>
@@ -319,6 +339,7 @@
         <div class="color" data-color="EMPTY"></div>
         <div class="color" data-color="EMPTY"></div>
         <div class="color" data-color="EMPTY"></div>
+        <div class="index"></div>
     </div>
 </script>
 <script id="bottle-color-template" type="text/template">
@@ -359,7 +380,7 @@
     $.each(colors, function (key, value) {
       const node = $(bottleColor);
       node.attr('data-color', key);
-      node.find('.color').css({background: value});
+      node.find('.color').css({background: value});  
 
       colorContainer.append(node);
 
@@ -373,6 +394,7 @@
 
     $('#add-bottle').on('click', function () {
       bottleContainer.append(bottle);
+      countColors();
     });
     $('#remove-bottle').on('click', function () {
       bottleContainer.find('.bottle').last().remove();
@@ -388,6 +410,10 @@
 
     const countColors = function() {
       emptyColorCounts();
+      $('#bottles .bottle').each(function(index) {
+        $(this).find('.index').html(index + 1);
+      });
+
       $('#bottles .bottle .color').each(function() {
         let currentColor = $(this).data('color');
         if (currentColor) {
@@ -412,6 +438,7 @@
       let emptyTubes = 0;
       let incompleteTubes = 0;
       let incompleteColors =  $('#bottle-colors .text-warning').length;
+      let filledTubes = 0;
 
       $(data).each(function(key, values) {
         let tube = values;
@@ -428,13 +455,16 @@
           } else {
             incompleteTubes++;
           }
+        } else {
+          filledTubes++;
         }
       });
 
-      if (emptyTubes < 2 || incompleteTubes > 0 || incompleteColors > 0) {
+      if (emptyTubes < 2 || incompleteTubes > 0 || incompleteColors > 0 || filledTubes === 0) {
         $('.color-errors .empty-tubes').toggle(emptyTubes < 2);
         $('.color-errors .incomplete-tubes').toggle(incompleteTubes > 0);
         $('.color-errors .incomplete-colors').toggle(incompleteColors > 0);
+        $('.color-errors .missing-tubes').toggle(filledTubes === 0);
         $('.color-errors').show();
 
         return false;
@@ -458,10 +488,194 @@
 
       countColors();
       $('.color-errors').hide();
+      $('#solve').hide();
     });
 
-    $('#generate-json').on('click', function() {
-      let data = [['FILLER', 'FILLER', 'FILLER', 'FILLER']];
+    /* ------------------ SOLVING ------------------ */
+
+    const bottles = [
+      ["LBLUE","YELLOW","BROWN","PURPLE"],
+      ["BLUE","GREEN","ORANGE","FRUIT"],
+      ["PURPLE","RED","YELLOW","PINK"],
+      ["GREEN","YELLOW","FRUIT","RED"],
+      ["LBLUE","FRUIT","ORANGE","FRUIT"],
+      ["GREEN","PURPLE","LGREEN","ORANGE"],
+      ["PALE","PINK","LBLUE","BROWN"],
+      ["BROWN","ORANGE","LGREEN","RED"],
+      ["LBLUE","BLUE","YELLOW","PINK"],
+      ["PINK","GREEN","LGREEN","PALE"],
+      ["PALE","BLUE","PURPLE","LGREEN"],
+      ["BLUE","PALE","BROWN","RED"],
+      ["EMPTY", "EMPTY", "EMPTY", "EMPTY"],
+      ["EMPTY", "EMPTY", "EMPTY", "EMPTY"]
+    ];
+
+    function isBottleSolved(bottle) {
+      const color = bottle[0];
+
+      // empty bottle
+      if (color === 'EMPTY') return true;
+
+      for (let i = 1; i < bottle.length; i++) {
+        // incomplete bottle
+        if (bottle[i] === 'EMPTY') return false;
+        // 2 different colors
+        if (bottle[i] !== color) return false;
+      }
+
+      return true;
+    }
+
+    function isSolved(bottles) {
+      for (let i = 0; i < bottles.length; i++) {
+        if (isBottleSolved(bottles[i]) === false) return false;
+      }
+
+      return true;
+    }
+
+    function cloneStep(step) {
+      return {
+        moves: step.moves.map((x) => [...x]),
+        bottles: step.bottles.map((x) => [...x])
+      };
+    }
+
+    function hashBottles(bottles) {
+      let hash = '';
+      for (let i = 0; i < bottles.length; i++) {
+        hash += bottles[i].join('');
+      }
+
+      return hash;
+    }
+
+    function getBottleData(bottle) {
+      let topColor = 'EMPTY';
+      let room = 0;
+      let movable = 0;
+
+      for (let z = 3; z >= 0; z--) {
+        let previousColor = bottle[z === 3 ? z : z + 1];
+        if (bottle[z] !== 'EMPTY') {
+          if (topColor === 'EMPTY') topColor = bottle[z];
+          if (topColor === bottle[z] && (topColor === previousColor || previousColor === 'EMPTY')) movable++;
+        } else {
+          room++;
+        }
+      }
+
+      return {
+        colors: [...bottle],
+        topColor: topColor,
+        room: room,
+        movable: movable
+      }
+    }
+
+    function isMovePossible(bottle1, bottle2) {
+      // no space available
+      if (bottle2.room === 0) {
+        return false;
+      }
+
+      // nothing to move
+      if (bottle1.movable === 0) {
+        return false;
+      }
+
+      // ignore complete bottles
+      if (bottle1.movable === 4) {
+        return false;
+      }
+
+      // not enough room
+      if (bottle1.movable > bottle2.room) {
+        return false;
+      }
+
+      // useless move of single color to empty bottle
+      if (bottle2.room === 4 && (bottle1.movable + bottle1.room) === 4) {
+        return false;
+      }
+
+      // not the same color
+      if (bottle1.topColor !== bottle2.topColor && bottle2.topColor !== 'EMPTY') {
+        return false;
+      }
+
+      return true;
+    }
+
+    function solve(bottles) {
+      const stepQueue = [{moves: [], bottles: bottles}];
+      const visited = {};
+      const bottleCount = bottles.length;
+      let solved = null;
+      let complexity = 0;
+      const hardCap = 2000000;
+      const start = Date.now();
+
+      solving:
+      while (stepQueue.length > 0 && complexity < hardCap) {
+        const currentStep = stepQueue.pop();
+        const currentHash = hashBottles(currentStep.bottles);
+
+        if (visited[currentHash] === true) continue;
+
+        visited[currentHash] = true;
+
+        for (let i = 0; i < bottleCount; i++) {
+          const bottle1 = getBottleData(currentStep.bottles[i]);
+
+          if (isBottleSolved(bottle1.colors)) continue;
+          if (bottle1.colors[0] === 'EMPTY') continue;
+
+          for (let j = 0; j < bottleCount; j++) {
+            if (j === i) continue;
+
+            const bottle2 = getBottleData(currentStep.bottles[j]);
+
+            if (isMovePossible(bottle1, bottle2)) {
+              const nextStep = cloneStep(currentStep);
+              nextStep.moves.push([i, j]);
+              let moved = 0;
+              let removed = 0;
+              for (let k = 0; k < 4; k++) {
+                // remove color from first bottle
+                if (nextStep.bottles[i][3 - k] === bottle1.topColor && removed < bottle1.movable) {
+                  nextStep.bottles[i][3 - k] = 'EMPTY';
+                  removed++;
+                }
+
+                // set the color in the <movable> number of EMPTY spaces
+                if (nextStep.bottles[j][k] === 'EMPTY' && moved < bottle1.movable) {
+                  nextStep.bottles[j][k] = bottle1.topColor;
+                  moved++;
+                }
+              }
+
+              if (isSolved(nextStep.bottles)) {
+                solved = nextStep;
+                break solving;
+              }
+
+              stepQueue.push(nextStep);
+              complexity++;
+            }
+          }
+        }
+      }
+
+      return {
+        moves: solved.moves,
+        time: (Date.now() - start) / 1000,
+        complexity: complexity
+      };
+    }
+    
+    $('#solve-button').on('click', function() {
+      let data = [];
       $('#bottles .bottle').each(function() {
         let colors = [];
         $(this).find('.color').each(function() {
@@ -474,7 +688,18 @@
         return;
       }      
 
-      $('#color-json').show().val(JSON.stringify({bottles: data}));
+      const result = solve(data);
+      console.log(result);
+
+      if (result.moves.length > 0) {
+        $('#solve').show();
+        $('#solve-time').html(result.time);
+        $('#solve-complexity').html(result.complexity);
+        $('#solve-moves').html('');
+        $(result.moves).each((index, move) => {
+          $('#solve-moves').append('<li>' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
+        });
+      }      
     });
   });
 </script>
