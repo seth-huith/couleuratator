@@ -314,8 +314,9 @@
                       <b>Solution : </b>
                       <ul id="solve-moves"></ul>
                       <small><i>
-                        <span id="solve-time"></span> secondes<br>
-                        Complexité <span id="solve-complexity"></span>
+                        Temps : <span id="solve-time"></span> secondes<br>
+                        Complexité : <span id="solve-complexity"></span><br>
+                        Puzzle : <code id="solve-puzzle"></code>
                       </i></small>
                     </div>
                 </div>
@@ -613,7 +614,7 @@
       const bottleCount = bottles.length;
       let solved = null;
       let complexity = 0;
-      const hardCap = 2000000;
+      const hardCap = 20000;
       const start = Date.now();
 
       solving:
@@ -670,7 +671,8 @@
       return {
         moves: solved.moves,
         time: (Date.now() - start) / 1000,
-        complexity: complexity
+        complexity: complexity,
+        puzzle: JSON.stringify(bottles)
       };
     }
     
@@ -696,6 +698,7 @@
         $('#solve-time').html(result.time);
         $('#solve-complexity').html(result.complexity);
         $('#solve-moves').html('');
+        $('#solve-puzzle').html(result.puzzle);
         $(result.moves).each((index, move) => {
           $('#solve-moves').append('<li>' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
         });
