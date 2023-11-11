@@ -699,11 +699,11 @@
       });
 
       if (checkEntries(data) === false) {
-        //return;
+        return;
       }      
 
-      //const result = solve(data);
-      const result = solve(bottles);
+      const result = solve(data);
+      //const result = solve(bottles);
       console.log(result);
 
       if (result.moves.length > 0) {
