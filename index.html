@@ -728,6 +728,9 @@
         $(result.moves).each((index, move) => {
           $('#solve-moves').append('<li><input type="checkbox" />' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
         });
+        if (result.moves.length === 0) {
+          $('#solve-moves').append('<li>Aucune solution trouvée 😟</li>');
+        }
       }      
     });
 
