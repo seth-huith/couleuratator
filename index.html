@@ -304,9 +304,9 @@
                         <div id="bottle-colors"></div>
                     </div>
                     <div class="col-12">
-                        <button id="add-bottle" class="btn btn-primary">+</button>
-                        <button id="remove-bottle" class="btn btn-primary">-</button>
-                        <button id="solve-button" class="btn btn-primary">Solution</button>
+                        <button id="add-bottle" class="btn btn-primary">+ ajouter</button>
+                        <button id="remove-bottle" class="btn btn-primary">- retirer</button>
+                        <button id="solve-button" class="btn btn-success">Solution</button>
                     </div>
                     <div class="col-12 color-errors hide">
                       <div class="invalid-feedback incomplete-tubes">
@@ -383,7 +383,8 @@
       K: '#e099df', // PINK
       L: '#eb5e7e', // FRUIT
       M: '#463bc6', // BLURPLE
-      N: '#6a696e'  // GREY
+      N: '#6a696e', // GREY
+      Z: '' // EMPTY        
     };
 
     // INIT
@@ -396,7 +397,9 @@
 
       const button = $('<div class="color-button"></div>');
       button.attr('data-color', key);
-      button.css({background: value});
+      button.css({background: value ? value : 
+        'repeating-linear-gradient(45deg, #39448a, #39448a 10.5px, #283163 10.5px, #283163 21px)'
+      });
 
       console.log(button);
       modalContent.append(button);
@@ -428,7 +431,7 @@
 
       $('#bottles .bottle .color').each(function() {
         let currentColor = $(this).data('color');
-        if (currentColor) {
+        if (currentColor !== 'Z') {
             colorCounts[currentColor]++;
             hashBottles += currentColor;
         }
