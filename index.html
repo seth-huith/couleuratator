@@ -328,8 +328,7 @@
                       <small><i>
                         Temps : <span id="solve-time"></span> secondes<br>
                         Complexité : <span id="solve-complexity"></span><br>
-                        Lien : <a id="solve-link"></a><br>
-                        Puzzle : <code id="solve-puzzle"></code>
+                        Puzzle : <a id="solve-puzzle"></a>
                       </i></small>
                     </div>
                 </div>
@@ -693,8 +692,7 @@
         moves: solved.moves,
         time: (Date.now() - start) / 1000,
         complexity: complexity,
-        link: window.location.origin + window.location.pathname + '?q=' + hashBottles(bottles),
-        puzzle: JSON.stringify(bottles)
+        puzzle: window.location.origin + window.location.pathname + '?q=' + hashBottles(bottles)
       };
     }
     
@@ -721,8 +719,7 @@
         $('#solve-time').html(result.time);
         $('#solve-complexity').html(result.complexity);
         $('#solve-moves').html('');
-        $('#solve-link').attr('href', result.link).html(result.link);
-        $('#solve-puzzle').html(result.puzzle);
+        $('#solve-puzzle').attr('href', result.puzzle).html(result.puzzle);
         $(result.moves).each((index, move) => {
           $('#solve-moves').append('<li><input type="checkbox" />' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
         });
