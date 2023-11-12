@@ -638,7 +638,7 @@
       const bottleCount = bottles.length;
       let solved = null;
       let complexity = 0;
-      const hardCap = 20000;
+      const hardCap = 2000000;
       const start = Date.now();
 
       solving:
@@ -693,7 +693,7 @@
       }
 
       return {
-        moves: solved.moves,
+        moves: solved ? solved.moves : [],
         time: (Date.now() - start) / 1000,
         complexity: complexity,
         puzzle: window.location.origin + window.location.pathname + '?q=' + hashBottles(bottles)
@@ -718,7 +718,7 @@
       //const result = solve(bottles);
       console.log(result);
 
-      if (result.moves.length > 0) {
+      if (result.complexity > 0) {
         $('.color-errors').hide();
         $('#solve').show();
         $('#solve-time').html(result.time);
