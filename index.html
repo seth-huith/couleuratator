@@ -328,6 +328,7 @@
                       <small><i>
                         Temps : <span id="solve-time"></span> secondes<br>
                         Complexité : <span id="solve-complexity"></span><br>
+                        Lien : <a id="solve-link"></a><br>
                         Puzzle : <code id="solve-puzzle"></code>
                       </i></small>
                     </div>
@@ -348,10 +349,10 @@
 
 <script id="bottle-template" type="text/template">
     <div class="bottle">
-        <div class="color" data-color="EMPTY"></div>
-        <div class="color" data-color="EMPTY"></div>
-        <div class="color" data-color="EMPTY"></div>
-        <div class="color" data-color="EMPTY"></div>
+        <div class="color" data-color="Z"></div>
+        <div class="color" data-color="Z"></div>
+        <div class="color" data-color="Z"></div>
+        <div class="color" data-color="Z"></div>
         <div class="index"></div>
     </div>
 </script>
@@ -386,10 +387,7 @@
       N: '#6a696e'  // GREY
     };
 
-    for (let i = 0; i < 12; i++) {
-      bottleContainer.append(bottle);
-    }
-
+    // INIT
     $.each(colors, function (key, value) {
       const node = $(bottleColor);
       node.attr('data-color', key);
@@ -411,6 +409,7 @@
     });
     $('#remove-bottle').on('click', function () {
       bottleContainer.find('.bottle').last().remove();
+      countColors();
     });
 
     let colorCounts = {};
@@ -422,6 +421,7 @@
     };
 
     const countColors = function() {
+      let hashBottles = '';
       emptyColorCounts();
       $('#bottles .bottle').each(function(index) {
         $(this).find('.index').html(index + 1);
@@ -431,6 +431,7 @@
         let currentColor = $(this).data('color');
         if (currentColor) {
             colorCounts[currentColor]++;
+            hashBottles += currentColor;
         }
       });
 
@@ -443,9 +444,10 @@
           .toggleClass('text-success', colorCount === 4)
           .toggleClass('text-warning', colorCount !== 4 && colorCount > 0)
           .html(colorCount);
-      })
+      });
+
+      history.pushState({}, '', window.location.origin + window.location.pathname + '?q=' + hashBottles);
     };
-    countColors();
 
     const checkEntries = function(data) {
       let emptyTubes = 0;
@@ -457,7 +459,7 @@
         let tube = values;
         let empties = 0;
         $(values).each(function(key, value) {
-          if (value === 'EMPTY') {
+          if (value === 'Z') {
             empties++;
           }
         });
@@ -485,6 +487,7 @@
     };
 
     const colorModal = new bootstrap.Modal(document.getElementById('color-modal'));
+    const empty = 'Z';
     let colorElement = null;
 
     $('#bottles').on('click', '.color', function() {
@@ -504,34 +507,40 @@
       $('#solve').hide();
     });
 
+    /* -------------------- URL -----------------------*/
+    const params = new URLSearchParams(window.location.search);
+    const hash = params.get('q');
+
+    if (hash && hash.length > 0) {
+      const urlBottles = hash.match(/.{1,4}/g);
+      console.log(urlBottles)
+      $(urlBottles).each(function(index, chunk) {
+        const newBottle = $(bottle);
+        for (let i = 0; i < chunk.length; i++) {
+          const square = newBottle.find('.color:nth-child(' + (i +1) +')');
+          square.data('color', chunk[i]);
+          square.css({background: colors[chunk[i]]});
+        }
+        bottleContainer.append(newBottle);
+      });
+    } else {
+      for (let i = 0; i < 12; i++) {
+        bottleContainer.append(bottle);
+      }
+    }
+
+    countColors();
+
     /* ------------------ SOLVING ------------------ */
-
-    const bottles = [
-      ["LBLUE","YELLOW","BROWN","PURPLE"],
-      ["BLUE","GREEN","ORANGE","FRUIT"],
-      ["PURPLE","RED","YELLOW","PINK"],
-      ["GREEN","YELLOW","FRUIT","RED"],
-      ["LBLUE","FRUIT","ORANGE","FRUIT"],
-      ["GREEN","PURPLE","LGREEN","ORANGE"],
-      ["PALE","PINK","LBLUE","BROWN"],
-      ["BROWN","ORANGE","LGREEN","RED"],
-      ["LBLUE","BLUE","YELLOW","PINK"],
-      ["PINK","GREEN","LGREEN","PALE"],
-      ["PALE","BLUE","PURPLE","LGREEN"],
-      ["BLUE","PALE","BROWN","RED"],
-      ["EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-      ["EMPTY", "EMPTY", "EMPTY", "EMPTY"]
-    ];
-
     function isBottleSolved(bottle) {
       const color = bottle[0];
 
       // empty bottle
-      if (color === 'EMPTY') return true;
+      if (color === empty) return true;
 
       for (let i = 1; i < bottle.length; i++) {
         // incomplete bottle
-        if (bottle[i] === 'EMPTY') return false;
+        if (bottle[i] === empty) return false;
         // 2 different colors
         if (bottle[i] !== color) return false;
       }
@@ -564,15 +573,15 @@
     }
 
     function getBottleData(bottle) {
-      let topColor = 'EMPTY';
+      let topColor = empty;
       let room = 0;
       let movable = 0;
 
       for (let z = 3; z >= 0; z--) {
         let previousColor = bottle[z === 3 ? z : z + 1];
-        if (bottle[z] !== 'EMPTY') {
-          if (topColor === 'EMPTY') topColor = bottle[z];
-          if (topColor === bottle[z] && (topColor === previousColor || previousColor === 'EMPTY')) movable++;
+        if (bottle[z] !== empty) {
+          if (topColor === empty) topColor = bottle[z];
+          if (topColor === bottle[z] && (topColor === previousColor || previousColor === empty)) movable++;
         } else {
           room++;
         }
@@ -613,7 +622,7 @@
       }
 
       // not the same color
-      if (bottle1.topColor !== bottle2.topColor && bottle2.topColor !== 'EMPTY') {
+      if (bottle1.topColor !== bottle2.topColor && bottle2.topColor !== empty) {
         return false;
       }
 
@@ -642,7 +651,7 @@
           const bottle1 = getBottleData(currentStep.bottles[i]);
 
           if (isBottleSolved(bottle1.colors)) continue;
-          if (bottle1.colors[0] === 'EMPTY') continue;
+          if (bottle1.colors[0] === empty) continue;
 
           for (let j = 0; j < bottleCount; j++) {
             if (j === i) continue;
@@ -657,12 +666,12 @@
               for (let k = 0; k < 4; k++) {
                 // remove color from first bottle
                 if (nextStep.bottles[i][3 - k] === bottle1.topColor && removed < bottle1.movable) {
-                  nextStep.bottles[i][3 - k] = 'EMPTY';
+                  nextStep.bottles[i][3 - k] = empty;
                   removed++;
                 }
 
-                // set the color in the <movable> number of EMPTY spaces
-                if (nextStep.bottles[j][k] === 'EMPTY' && moved < bottle1.movable) {
+                // set the color in the <movable> number of empty spaces
+                if (nextStep.bottles[j][k] === empty && moved < bottle1.movable) {
                   nextStep.bottles[j][k] = bottle1.topColor;
                   moved++;
                 }
@@ -684,6 +693,7 @@
         moves: solved.moves,
         time: (Date.now() - start) / 1000,
         complexity: complexity,
+        link: window.location.origin + window.location.pathname + '?q=' + hashBottles(bottles),
         puzzle: JSON.stringify(bottles)
       };
     }
@@ -711,6 +721,7 @@
         $('#solve-time').html(result.time);
         $('#solve-complexity').html(result.complexity);
         $('#solve-moves').html('');
+        $('#solve-link').attr('href', result.link).html(result.link);
         $('#solve-puzzle').html(result.puzzle);
         $(result.moves).each((index, move) => {
           $('#solve-moves').append('<li><input type="checkbox" />' + (move[0] + 1) + ' -> ' + (move[1] + 1)  + '</li>');
