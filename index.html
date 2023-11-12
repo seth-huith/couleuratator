@@ -304,8 +304,8 @@
                         <div id="bottle-colors"></div>
                     </div>
                     <div class="col-12">
-                        <button id="add-bottle" class="btn btn-primary">+ ajouter</button>
-                        <button id="remove-bottle" class="btn btn-primary">- retirer</button>
+                        <button id="add-bottle" class="btn btn-primary">+1 éprouvette</button>
+                        <button id="remove-bottle" class="btn btn-primary">-1 éprouvette</button>
                         <button id="solve-button" class="btn btn-success">Solution</button>
                     </div>
                     <div class="col-12 color-errors hide">
@@ -432,9 +432,9 @@
       $('#bottles .bottle .color').each(function() {
         let currentColor = $(this).data('color');
         if (currentColor !== 'Z') {
-            colorCounts[currentColor]++;
-            hashBottles += currentColor;
+          colorCounts[currentColor]++;
         }
+        hashBottles += currentColor;
       });
 
       $('#bottle-colors .color-div').each(function() {
@@ -483,6 +483,7 @@
         $('.color-errors .incomplete-colors').toggle(incompleteColors > 0);
         $('.color-errors .missing-tubes').toggle(filledTubes === 0);
         $('.color-errors').show();
+        $('#solve').hide();
 
         return false;
       }
@@ -515,7 +516,7 @@
 
     if (hash && hash.length > 0) {
       const urlBottles = hash.match(/.{1,4}/g);
-      console.log(urlBottles)
+
       $(urlBottles).each(function(index, chunk) {
         const newBottle = $(bottle);
         for (let i = 0; i < chunk.length; i++) {
@@ -718,6 +719,7 @@
       console.log(result);
 
       if (result.moves.length > 0) {
+        $('.color-errors').hide();
         $('#solve').show();
         $('#solve-time').html(result.time);
         $('#solve-complexity').html(result.complexity);
