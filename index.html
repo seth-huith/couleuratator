@@ -304,9 +304,9 @@
                         <div id="bottle-colors"></div>
                     </div>
                     <div class="col-12">
-                        <button id="add-bottle" class="btn btn-primary">+1 éprouvette</button>
-                        <button id="remove-bottle" class="btn btn-primary">-1 éprouvette</button>
-                        <button id="solve-button" class="btn btn-success">Solution</button>
+                      <button id="add-bottle" class="btn btn-primary">+1 éprouvette</button>
+                      <button id="remove-bottle" class="btn btn-primary">-1 éprouvette</button>
+                      <button id="solve-button" class="btn btn-success">Solution</button>
                     </div>
                     <div class="col-12 color-errors hide">
                       <div class="invalid-feedback incomplete-tubes">
@@ -330,6 +330,9 @@
                         Complexité : <span id="solve-complexity"></span><br>
                         Lien : <a id="solve-puzzle"></a>
                       </i></small>
+                    </div>
+                    <div class="col-12">
+                      <button id="reset-button" class="btn btn-danger" style="margin-top: 40px;">Reset</button>
                     </div>
                 </div>
             </div>
@@ -413,6 +416,9 @@
       bottleContainer.find('.bottle').last().remove();
       countColors();
     });
+    $('#reset-button').on('click', function() {
+      window.location = window.location.pathname;
+    });
 
     let colorCounts = {};
     const emptyColorCounts = function() {
@@ -448,7 +454,8 @@
           .html(colorCount);
       });
 
-      history.pushState({}, '', window.location.origin + window.location.pathname + '?q=' + hashBottles);
+      const hashQuery = hashBottles.match(/^Z+$/) ? '' : '?q=' + hashBottles;
+      history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
     };
 
     const checkEntries = function(data) {
@@ -514,7 +521,8 @@
     const params = new URLSearchParams(window.location.search);
     const hash = params.get('q');
 
-    if (hash && hash.length > 0) {
+    if (hash && hash.length > 0 && hash.match(/^Z+$/) === null) {
+      console.log(hash.match(/^Z+$/));
       const urlBottles = hash.match(/.{1,4}/g);
 
       $(urlBottles).each(function(index, chunk) {
