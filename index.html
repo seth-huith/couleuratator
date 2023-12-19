@@ -876,13 +876,20 @@
 
       function appendText(text) {
         checkLineLength(text);
+        console.log(raw.selectionStart)
+        if (raw.selectionStart) {
+          const before = $(raw).val().substring(0, raw.selectionStart);
+          const after = $(raw).val().substring(raw.selectionStart, raw.length);
+          $(raw).val(before + text + after);
+        } else {
+          $(raw).val($(raw).val() + text);
+        }
 
-        $(raw).val($(raw).val() + text);
         $(raw).trigger('change');
         $(raw).focus();
       }
 
-      function  updatePreview() {
+      function updatePreview() {
         $(preview).html(
           $(raw).val()
             .replaceAll(colorRegexp, '<span style="color: #$1;">$2</span>')
