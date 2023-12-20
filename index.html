@@ -215,15 +215,14 @@
 <body>
     <ul class="nav nav-tabs" id="tabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tubes-tab" data-bs-toggle="tab" data-bs-target="#tubes-content" type="button" role="tab" aria-controls="tubes-content" aria-selected="false">Eprouvettes</button>
+        <a class="nav-link active" id="text-tab" data-bs-toggle="tab" href="#text-content" role="tab">Texte</a>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-content" type="button" role="tab" aria-controls="text-content" aria-selected="true">Texte</button>
+        <a class="nav-link" id="tubes-tab" data-bs-toggle="tab" href="#tubes" role="tab" aria-controls="tubes">Eprouvettes</a>
       </li>
-        
     </ul>
     <div class="tab-content" id="tab-contents">
-        <div class="tab-pane fade" id="text-content" role="tabpanel" aria-labelledby="text-tab">
+        <div class="tab-pane fade active show" id="text-content" role="tabpanel" aria-labelledby="text-tab">
             <div class="container-fluid" style="padding-bottom: 100px;">
             <div class="row">
                 <div class="col-6">
@@ -296,7 +295,7 @@
           -->
         </div>
         </div>
-        <div class="tab-pane fade active show" id="tubes-content" role="tabpanel" aria-labelledby="tubes-tab">
+        <div class="tab-pane fade" id="tubes" role="tabpanel" aria-labelledby="tubes-tab">
             <div class="container-fluid" style="padding-bottom: 100px;">
                 <div class="row">
                     <div class="col-12">
@@ -367,6 +366,11 @@
 
 <script>
   $(function () {
+    $('a[data-bs-toggle="tab"]').click(function() {
+      location.hash = $(this).attr('href');
+      //history.pushState({}, '', window.location.origin + window.location.pathname + "&tab=" + $(this).data('href'));
+    })
+
     const bottle = $('#bottle-template').html();
     const bottleColor = $('#bottle-color-template').html();
     const bottleContainer = $('#bottles');
@@ -454,7 +458,7 @@
           .html(colorCount);
       });
 
-      const hashQuery = hashBottles.match(/^Z+$/) ? '' : '?q=' + hashBottles;
+      const hashQuery = hashBottles.match(/^Z+$/) ? '' : '?tab=tubes&q=' + hashBottles;
       history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
     };
 
@@ -520,6 +524,12 @@
     /* -------------------- URL -----------------------*/
     const params = new URLSearchParams(window.location.search);
     const hash = params.get('q');
+    const tab = params.get('tab');
+
+    // autofocus tab if puzzle
+    if (tab) {
+      $('a[href="#' + tab + '"]').tab('show');
+    }
 
     if (hash && hash.length > 0 && hash.match(/^Z+$/) === null) {
       console.log(hash.match(/^Z+$/));
@@ -704,7 +714,7 @@
         moves: solved ? solved.moves : [],
         time: (Date.now() - start) / 1000,
         complexity: complexity,
-        puzzle: window.location.origin + window.location.pathname + '?q=' + hashBottles(bottles)
+        puzzle: window.location.origin + window.location.pathname + '?q=' + hashBottles(bottles) + '&tab=tubes-content'
       };
     }
     
@@ -749,6 +759,7 @@
   });
 </script>
 
+<!-- TEXT EDITING -->
 <script>
   jscolor.presets.default = {
     format:'hexa',
@@ -856,6 +867,11 @@
         + '▐░▒▓▔▕▖▗▘▙▚▛▜▝▞▟'
         + '◢◣◥◤↑↓←→↖↗↙↘△▲▽▼▶▷◀◁';
 
+      // adapting the url for refreshing and browser remembering purposes
+      $('#text-tab').on('click', () => {
+        location.href = location.origin + location.pathname + '#text-content';
+      })
+      
       let i = 0;
       $.each(emotes, function (char, icon) {
         $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
