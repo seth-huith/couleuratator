@@ -241,6 +241,11 @@
                 <div class="col-6">
                     <div id="preview" title="Preview"></div>
                 </div>
+                <div>
+                  <span style="background: #FFC336FF"></span>
+                  <span style="background: #FF4DEAFF"></span>
+                  #80B0FFFF
+                </div>
             </div>
             <div class="row">
                 <div class="input-group">
@@ -916,6 +921,9 @@
         const charCount = $(raw).val().length;
         $(count).html(charCount);
         $(count).toggleClass('text-error', charCount > 1000);
+
+        const hashQuery = '?tab=text-content&q=' + $(raw).val();
+        history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
       }
 
       $(raw).on('keyup change', function(event) {
