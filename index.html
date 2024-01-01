@@ -215,10 +215,10 @@
 <body>
     <ul class="nav nav-tabs" id="tabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <a class="nav-link active" id="text-tab" data-bs-toggle="tab" href="#text-content" role="tab">Texte</a>
+        <a class="nav-link active" id="text-tab" data-bs-toggle="tab" data-tab="text-content" href="#text-content" role="tab">Texte</a>
       </li>
       <li class="nav-item" role="presentation">
-        <a class="nav-link" id="tubes-tab" data-bs-toggle="tab" href="#tubes" role="tab" aria-controls="tubes">Eprouvettes</a>
+        <a class="nav-link" id="tubes-tab" data-bs-toggle="tab" data-tab="tubes" href="#tubes" role="tab" aria-controls="tubes">Eprouvettes</a>
       </li>
     </ul>
     <div class="tab-content" id="tab-contents">
@@ -244,7 +244,6 @@
                 <div>
                   <span style="background: #FFC336FF"></span>
                   <span style="background: #FF4DEAFF"></span>
-                  #80B0FFFF
                 </div>
             </div>
             <div class="row">
@@ -336,7 +335,7 @@
                       </i></small>
                     </div>
                     <div class="col-12">
-                      <button id="reset-button" class="btn btn-danger" style="margin-top: 40px;">Reset</button>
+                      <a href="?tab=tubes" class="btn btn-danger" style="margin-top: 40px;">Reset</a>
                     </div>
                 </div>
             </div>
@@ -372,8 +371,8 @@
 <script>
   $(function () {
     $('a[data-bs-toggle="tab"]').click(function() {
-      location.hash = $(this).attr('href');
-      //history.pushState({}, '', window.location.origin + window.location.pathname + "&tab=" + $(this).data('href'));
+      location.hash = '';
+      history.pushState({}, '', window.location.origin + window.location.pathname + "?tab=" + $(this).data('tab'));
     })
 
     const bottle = $('#bottle-template').html();
@@ -425,9 +424,6 @@
       bottleContainer.find('.bottle').last().remove();
       countColors();
     });
-    $('#reset-button').on('click', function() {
-      window.location = window.location.pathname;
-    });
 
     let colorCounts = {};
     const emptyColorCounts = function() {
@@ -463,8 +459,10 @@
           .html(colorCount);
       });
 
-      const hashQuery = hashBottles.match(/^Z+$/) ? '' : '?tab=tubes&q=' + hashBottles;
-      history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
+      if (window.location.href.match(/tubes/)) {
+        const hashQuery = hashBottles.match(/^Z+$/) ? '?tab=tubes' : '?tab=tubes&q=' + hashBottles;
+        history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
+      }
     };
 
     const checkEntries = function(data) {
@@ -530,14 +528,12 @@
     const params = new URLSearchParams(window.location.search);
     const hash = params.get('q');
     const tab = params.get('tab');
-
     // autofocus tab if puzzle
     if (tab) {
-      $('a[href="#' + tab + '"]').tab('show');
+      $('a[data-tab="' + tab + '"]').tab('show');
     }
 
     if (hash && hash.length > 0 && hash.match(/^Z+$/) === null) {
-      console.log(hash.match(/^Z+$/));
       const urlBottles = hash.match(/.{1,4}/g);
 
       $(urlBottles).each(function(index, chunk) {
@@ -874,7 +870,7 @@
 
       // adapting the url for refreshing and browser remembering purposes
       $('#text-tab').on('click', () => {
-        location.href = location.origin + location.pathname + '#text-content';
+        location.href = location.origin + location.pathname + '?tab=text-content';
       })
       
       let i = 0;
