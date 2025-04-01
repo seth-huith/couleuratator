@@ -34,6 +34,7 @@
             color: #ffffff;
             padding: 8px 12px;
             min-height: 254px;
+            max-width: 400px;
             display: block;
             cursor: not-allowed;
             -webkit-touch-callout: none; /* iOS Safari */
@@ -234,7 +235,7 @@
                     <div class="row">
                         <div class="col">
                             <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copier</button>
-                            <span class="float-end character-count"><span id="character-count">0</span> / 1000</span>
+                            <span class="float-end character-count"><span id="character-count">0</span> / 800</span>
                         </div>
                     </div>
                 </div>
@@ -248,21 +249,21 @@
             </div>
             <div class="row">
                 <div class="input-group">
-                    <input id="single-color" value="#cadfffff" data-jscolor="{}" />
+                    <input id="single-color" value="#cadfff" data-jscolor="{}" />
                     <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
-                    <button class="char-button btn btn-light default-color" data-char="[ffffffff]">Blanc</button>
+                    <button class="char-button btn btn-light default-color" data-char="[[-]ffffff]">Blanc</button>
                 </div>
             </div>
             <div class="row">
                 <div class="input-group">
-                    <button class="char-button btn btn-light" data-char="[B]"><b>B</b></button>
-                    <button class="char-button btn btn-secondary" data-char="[/B]"><b>-B</b></button>
-                    <button class="char-button btn btn-light" data-char="[I]"><i>I</i></button>
-                    <button class="char-button btn btn-secondary" data-char="[/I]"><i>-I</i></button>
-                    <button class="char-button btn btn-light" data-char="[U]"><u>U</u></button>
-                    <button class="char-button btn btn-secondary" data-char="[/U]"><u>-U</u></button>
-                    <button class="char-button btn btn-light" data-char="[S]"><s>S</s></button>
-                    <button class="char-button btn btn-secondary" data-char="[/S]"><s>-S</s></button>
+                    <button class="char-button btn btn-light" data-char="[[-]B]"><b>B</b></button>
+                    <button class="char-button btn btn-secondary" data-char="[[-]/B]"><b>-B</b></button>
+                    <button class="char-button btn btn-light" data-char="[[-]I]"><i>I</i></button>
+                    <button class="char-button btn btn-secondary" data-char="[[-]/I]"><i>-I</i></button>
+                    <button class="char-button btn btn-light" data-char="[[-]U]"><u>U</u></button>
+                    <button class="char-button btn btn-secondary" data-char="[[-]/U]"><u>-U</u></button>
+                    <button class="char-button btn btn-light" data-char="[[-]S]"><s>S</s></button>
+                    <button class="char-button btn btn-secondary" data-char="[[-]/S]"><s>-S</s></button>
                 </div>
             </div>
             <div class="row">
@@ -380,7 +381,7 @@
     const bottleContainer = $('#bottles');
     const colorContainer = $('#bottle-colors');
     const modalContent = $('#color-modal .modal-body');
-    const colors = {
+    const baseColors = {
       A: '#126165', // GREEN
       B: '#f28a29', // ORANGE
       C: '#0a5cd9', // BLUE
@@ -397,9 +398,27 @@
       N: '#6a696e', // GREY
       Z: '' // EMPTY        
     };
+    const gameCenterColors = {
+      a: '#33a02c', // (Green)
+      b: '#a6d96a', // (Light Green)
+      c: '#8c2d04', // (Burgundy/Dark Red)
+      d: '#fb8072', // (Pink/Salmon)
+      e: '#6a3d9a', // (Purple)
+      f: '#1f78b4', // (Blue)
+      g: '#a6cee3', // (Light Blue)
+      h: '#fdbf6f', // (Peach/Orange)
+      i: '#b2b2b2', // (Gray)
+      j: '#e31a1c', // (Red)
+      k: '#ff7f00', // (Orange)
+      l: '#cab2d6', // (Light Purple)
+      m: '#f781bf', // (Magenta)
+      n: '#b15928', // (Brown)
+      z: '' //empty
+    };
+    let colors = gameCenterColors;
 
     // INIT
-    $.each(colors, function (key, value) {
+    $.each(gameCenterColors, function (key, value) {
       const node = $(bottleColor);
       node.attr('data-color', key);
       node.find('.color').css({background: value});  
@@ -762,7 +781,7 @@
 <!-- TEXT EDITING -->
 <script>
   jscolor.presets.default = {
-    format:'hexa',
+    format:'hex',
     required: false,
   };
 
@@ -772,96 +791,96 @@
       const count = $('#character-count')[0];
       const maxLineLength = 54;
 
-      const colorRegexp = /\[([0-9a-fA-F]{8})\]([^[\n]*)/gi;
-      const fontRegexp = /\[(\/?[IUBS])\]/gi;
-      const emoteRegexp = /(\[\#\d\d\])/gi;
+      const colorRegexp = /\[\[-\]([0-9a-fA-F]{6})\]([^[\n]*)/gi;
+      const fontRegexp = /\[\[-\](\/?[IUBS])\]/gi;
+      const emoteRegexp = /(\[\[-\]\#\d\d\])/gi;
 
       const baseColor = '#cadfff';
-      const baseColorFull = '[' + baseColor.replace('#', '') + 'ff]';
+      const baseColorFull = '[[-] ' + baseColor.replace('#', '') + ']';
       const clipboard = new ClipboardJS('.btn');
       const emotes = {
-        '[#01]': '💦',
-        '[#02]': '💥',
-        '[#03]': '💔',
-        '[#04]': '🍻',
-        '[#05]': '🌹',
-        '[#06]': '❤',
-        '[#07]': '😀',
-        '[#08]': '😭',
-        '[#09]': '😌',
-        '[#10]': '😵',
-        '[#11]': '😋',
-        '[#12]': '😂',
-        '[#13]': '😄',
-        '[#14]': '😫',
-        '[#15]': '😁',
-        '[#16]': '😃',
-        '[#17]': '😰',
-        '[#18]': '😢',
-        '[#19]': '😳',
-        '[#20]': '😤',
-        '[#21]': '🌚',
-        '[#22]': '😣',
-        '[#23]': '😯',
-        '[#24]': '😡',
-        '[#25]': '😠',
-        '[#26]': '😟',
-        '[#27]': '😞',
-        '[#28]': '😝',
-        '[#29]': '😈',
-        '[#30]': '😚',
-        '[#31]': '😘',
-        '[#32]': '😗',
-        '[#33]': '😖',
-        '[#34]': '🙁',
-        '[#35]': '😔',
-        '[#36]': '😇',
-        '[#37]': '😴',
-        '[#38]': '😓',
-        '[#39]': '😒',
-        '[#40]': '😑',
-        '[#41]': '🔥',
-        '[#42]': '😏',
-        '[#43]': '😎',
-        '[#44]': '😍',
-        '[#45]': '💋',
-        '[#46]': '✨',
-        '[#47]': '🎂',
-        '[#48]': '❓',
-        '[#49]': '🐷',
-        '[#50]': '😊',
-        '[#51]': '😃',
-        '[#53]': '😉',
-        '[#54]': '😜',
-        '[#55]': '😨',
-        '[#56]': '😱',
-        '[#57]': '😪',
-        '[#58]': '😷',
-        '[#59]': '💤',
-        '[#60]': '🎵',
-        '[#61]': '💩',
-        '[#62]': '👍',
-        '[#63]': '👎',
-        '[#65]': '👊',
-        '[#66]': '✊',
-        '[#67]': '✌',
-        '[#68]': '👋',
-        '[#69]': '✋',
-        '[#70]': '👐',
-        '[#71]': '👇',
-        '[#72]': '👆',
-        '[#73]': '👉',
-        '[#74]': '👈',
-        '[#75]': '🙌',
-        '[#76]': '🙏',
-        '[#77]': '☝',
-        '[#78]': '👏',
-        '[#79]': '💪',
-        '[#80]': '👩‍❤️‍👨',
-        '[#81]': '👩‍❤️‍💋‍👨',
-        '[#82]': '🌹',
-        '[#83]': '👀',
-        '[#84]': '👌',
+        '[[-]#01]': '💦',
+        '[[-]#02]': '💥',
+        '[[-]#03]': '💔',
+        '[[-]#04]': '🍻',
+        '[[-]#05]': '🌹',
+        '[[-]#06]': '❤',
+        '[[-]#07]': '😀',
+        '[[-]#08]': '😭',
+        '[[-]#09]': '😌',
+        '[[-]#10]': '😵',
+        '[[-]#11]': '😋',
+        '[[-]#12]': '😂',
+        '[[-]#13]': '😄',
+        '[[-]#14]': '😫',
+        '[[-]#15]': '😁',
+        '[[-]#16]': '😃',
+        '[[-]#17]': '😰',
+        '[[-]#18]': '😢',
+        '[[-]#19]': '😳',
+        '[[-]#20]': '😤',
+        '[[-]#21]': '🌚',
+        '[[-]#22]': '😣',
+        '[[-]#23]': '😯',
+        '[[-]#24]': '😡',
+        '[[-]#25]': '😠',
+        '[[-]#26]': '😟',
+        '[[-]#27]': '😞',
+        '[[-]#28]': '😝',
+        '[[-]#29]': '😈',
+        '[[-]#30]': '😚',
+        '[[-]#31]': '😘',
+        '[[-]#32]': '😗',
+        '[[-]#33]': '😖',
+        '[[-]#34]': '🙁',
+        '[[-]#35]': '😔',
+        '[[-]#36]': '😇',
+        '[[-]#37]': '😴',
+        '[[-]#38]': '😓',
+        '[[-]#39]': '😒',
+        '[[-]#40]': '😑',
+        '[[-]#41]': '🔥',
+        '[[-]#42]': '😏',
+        '[[-]#43]': '😎',
+        '[[-]#44]': '😍',
+        '[[-]#45]': '💋',
+        '[[-]#46]': '✨',
+        '[[-]#47]': '🎂',
+        '[[-]#48]': '❓',
+        '[[-]#49]': '🐷',
+        '[[-]#50]': '😊',
+        '[[-]#51]': '😃',
+        '[[-]#53]': '😉',
+        '[[-]#54]': '😜',
+        '[[-]#55]': '😨',
+        '[[-]#56]': '😱',
+        '[[-]#57]': '😪',
+        '[[-]#58]': '😷',
+        '[[-]#59]': '💤',
+        '[[-]#60]': '🎵',
+        '[[-]#61]': '💩',
+        '[[-]#62]': '👍',
+        '[[-]#63]': '👎',
+        '[[-]#65]': '👊',
+        '[[-]#66]': '✊',
+        '[[-]#67]': '✌',
+        '[[-]#68]': '👋',
+        '[[-]#69]': '✋',
+        '[[-]#70]': '👐',
+        '[[-]#71]': '👇',
+        '[[-]#72]': '👆',
+        '[[-]#73]': '👉',
+        '[[-]#74]': '👈',
+        '[[-]#75]': '🙌',
+        '[[-]#76]': '🙏',
+        '[[-]#77]': '☝',
+        '[[-]#78]': '👏',
+        '[[-]#79]': '💪',
+        '[[-]#80]': '👩‍❤️‍👨',
+        '[[-]#81]': '👩‍❤️‍💋‍👨',
+        '[[-]#82]': '🌹',
+        '[[-]#83]': '👀',
+        '[[-]#84]': '👌',
       };
       const ascii = '▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏'
         + '▐░▒▓▔▕▖▗▘▙▚▛▜▝▞▟'
@@ -915,7 +934,7 @@
         );
         const charCount = $(raw).val().length;
         $(count).html(charCount);
-        $(count).toggleClass('text-error', charCount > 1000);
+        $(count).toggleClass('text-error', charCount > 800);
 
         const hashQuery = '?tab=text-content&q=' + $(raw).val();
         history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
@@ -931,7 +950,7 @@
 
       $('#single-generate').on('click', () => {
         const code = $('#single-color').val().replace('#', '');
-        appendText('[' + code + ']');
+        appendText('[[-]' + code + ']');
       })
 
       $('#gradient-generate').on('click', () => {
@@ -968,7 +987,7 @@
           const green = Number(diff.green.start + diff.green.step * i).toString(16).padStart(2, '0');
           const blue = Number(diff.blue.start + diff.blue.step * i).toString(16).padStart(2, '0');
 
-          rendered += '[' + red + green + blue + 'FF]' + text[i];
+          rendered += '[[-]' + red + green + blue + ']' + text[i];
         }
 
         rendered += baseColorFull;
