@@ -415,10 +415,10 @@
       n: '#b15928', // (Brown)
       z: '' //empty
     };
-    let colors = gameCenterColors;
+    let colors = baseColors;
 
     // INIT
-    $.each(gameCenterColors, function (key, value) {
+    $.each(colors, function (key, value) {
       const node = $(bottleColor);
       node.attr('data-color', key);
       node.find('.color').css({background: value});  
