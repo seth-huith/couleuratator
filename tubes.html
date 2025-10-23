@@ -1,0 +1,126 @@
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.9/jscolor.min.js"></script>
+    <script src="https://colorjs.io/dist/color.global.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZST9R8QK4X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZST9R8QK4X');
+    </script>
+</head>
+<body>
+    <ul class="nav nav-tabs" id="tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="index.html">Texte</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" href="tubes.html">Medusa Vials</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="games.html">Game Center Vials</a>
+      </li>
+    </ul>
+
+    <div class="container-fluid" style="padding-bottom: 100px;">
+        <div class="row">
+            <div class="col-12">
+                <div id="bottles"></div>
+                <div id="bottle-colors"></div>
+            </div>
+            <div class="col-12">
+              <button id="add-bottle" class="btn btn-primary">+1 tube</button>
+              <button id="remove-bottle" class="btn btn-primary">-1 tube</button>
+              <button id="solve-button" class="btn btn-success">Solution</button>
+            </div>
+            <div class="col-12 color-errors hide">
+              <div class="invalid-feedback incomplete-tubes">
+                Certains tubes sont incomplets.
+              </div>
+              <div class="invalid-feedback empty-tubes">
+                Au moins 2 tubes vides sont nécessaires.
+              </div>
+              <div class="invalid-feedback incomplete-colors">
+                Chaque couleur doit être présente 4 fois.
+              </div>
+              <div class="invalid-feedback missing-tubes">
+                Des tubes doivent être remplis.
+              </div>
+            </div>
+            <div class="col-12" id="solve">
+              <b>Solution : </b>
+              <ul id="solve-moves"></ul>
+              <small><i>
+                Temps : <span id="solve-time"></span> secondes<br>
+                Complexité : <span id="solve-complexity"></span><br>
+                Lien : <a id="solve-puzzle"></a>
+              </i></small>
+            </div>
+            <div class="col-12">
+              <a href="tubes.html" class="btn btn-danger" style="margin-top: 40px;">Reset</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="color-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script id="bottle-template" type="text/template">
+    <div class="bottle">
+        <div class="color" data-color="Z"></div>
+        <div class="color" data-color="Z"></div>
+        <div class="color" data-color="Z"></div>
+        <div class="color" data-color="Z"></div>
+        <div class="index"></div>
+    </div>
+</script>
+<script id="bottle-color-template" type="text/template">
+    <div class="color-div">
+        <div class="color"></div>
+        <span class="number"></span>
+    </div>
+</script>
+<script>
+  window.PUZZLE_OPTIONS = {
+    baseColors: {
+      A: '#751d33', // BORDEAU
+      B: '#473ac8', // NIGHT BLUE
+      C: '#8a2fd2', // VIOLET
+      D: '#a2097d', // PURPLE
+      E: '#e09ae2', // PINK
+      F: '#eb8c2e', // YELLOW
+      G: '#eb5b7c', // SALMON
+      H: '#2bca64', // LGREEN
+      I: '#cb8b6f', // SKIN
+      J: '#764c1c', // LIGHT BROWN
+      K: '#c72a25', // LIGHT RED
+      L: '#55a4e7', // LIGHT BLUE
+      M: '#12591d', // DARK GREEN
+      Z: '' // EMPTY
+    },
+    updateHistory: function (hashBottles) {
+      const hashQuery = hashBottles.match(/^Z+$/) ? '' : '?q=' + hashBottles;
+      history.pushState({}, '', window.location.pathname + hashQuery);
+    },
+    buildPuzzleLink: function (hash) {
+      return window.location.origin + window.location.pathname + '?q=' + hash;
+    }
+  };
+</script>
+<script src="puzzle.js"></script>
+</body>
+</html>

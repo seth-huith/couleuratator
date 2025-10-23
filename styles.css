@@ -1,0 +1,195 @@
+body {
+    background: #313f64;
+    max-width: 1040px;
+    margin: auto;
+}
+body.modal-open {
+    overflow: inherit !important;
+}
+#tabs {
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+#tabs .nav-link {
+    color: #cadfff;
+}
+#tabs .nav-link.active {
+  color: #313f64;
+}
+button {
+  white-space: nowrap;
+}
+#preview {
+    background: #1f204f;
+    color: #ffffff;
+    padding: 8px 12px;
+    min-height: 254px;
+    max-width: 400px;
+    display: block;
+    cursor: not-allowed;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+input, textarea {
+    border-color: #212248 !important;
+}
+h1, h2 {
+    color: #cadfff;
+    margin: 20px 0;
+}
+[data-jscolor] {
+    border-width: 1px;
+    border-color: #cadfff !important;
+}
+.form-control {
+    border-width: 1px;
+    border-color: #cadfff !important;
+}
+.char-button {
+    margin: 4px 4px 4px 0;
+    width: 40px;
+}
+.char-button.btn.default-color {
+  margin: 0;
+  border-width: 0;
+}
+.emote-button {
+    font-size: 20px;
+    padding: 0 4px;
+    margin: 0 4px 4px 0;
+    width: 35px;
+}
+#single-generate {
+    height: 40px;
+    line-height: 26px;
+}
+#single-color {
+    border-radius: 6px 0 0 6px;
+}
+.character-count {
+    color: #cadfff;
+    padding: 6px 10px;
+    font-style: italic;
+}
+#character-count.text-error {
+    color: red;
+}
+.btn.default-color {
+    background-color: #ffffff;
+    width: auto;
+}
+#bottle-colors {
+    display: block;
+    width: 200px;
+    float: left;
+}
+#bottle-colors .color-div {
+    display: flex;
+    align-items: center;
+    width: 90px;
+    height: 60px;
+    float: left;
+}
+#bottle-colors .color-div .color {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+}
+#bottle-colors .color-div .number {
+    display: inline-block;
+    color: #aabfdf;
+    font-size: 20px;
+    padding-left: 8px;
+    line-height: 40px;
+}
+#bottles {
+    display: block;
+    text-align: center;
+    width: 600px;
+    margin-right: 40px;
+    float: left;
+}
+#bottles .bottle {
+    border: 1px solid #aabfdf;
+    border-width: 0 2px 2px;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 280px;
+    margin: 0 15px 40px;
+    overflow: hidden;
+}
+#bottles .bottle .color {
+    position: absolute;
+    left: 0;
+    height: 60px;
+    width: 60px;
+    border-top: 1px dashed #aabfdf;
+    cursor: pointer;
+    background: repeating-linear-gradient(
+      45deg,
+    #39448a,
+    #39448a 10.5px,
+    #283163 10.5px,
+    #283163 21px
+    );
+}
+#bottles .bottle .color {
+    bottom: 0;
+}
+#bottles .bottle .color + .color {
+    bottom: 60px;
+}
+#bottles .bottle .color + .color + .color {
+    bottom: 120px;
+}
+#bottles .bottle .color + .color + .color + .color {
+    bottom: 180px;
+}
+#bottles .bottle .index {
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    height: 30px;
+    width: 60px;
+    color: #cadfff;
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: -8px;
+}
+#color-modal .modal-dialog {
+    width: 272px;
+    margin-top: 160px;
+}
+#color-modal .modal-body {
+    padding: 3px;
+}
+#color-modal .color-button {
+    cursor: pointer;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+    margin: 3px;
+}
+#solve {
+  color: #cadfff;
+  display: none;
+}
+#solve-moves li {
+  list-style-type: none;
+  padding-left: 0;
+  margin-left: -20px;
+}
+#solve-moves input {
+  margin-right: 6px;
+}
+#solve-moves .checked {
+  text-decoration: line-through;
+  font-style: italic;
+}
