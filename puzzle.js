@@ -191,7 +191,7 @@
     const hash = params.get('q');
     const tab = params.get('tab');
     if (tab) {
-      $('a[data-tab="' + tab + '"]').tab('show');
+      location.url = $('a[data-tab="' + tab + '"]').attr('href');
     }
 
     if (hash && hash.length > 0 && hash.match(/^Z+$/) === null) {

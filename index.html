@@ -2,208 +2,12 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
     <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.9/jscolor.min.js"></script>
     <script src="https://colorjs.io/dist/color.global.js"></script>
-    <style>
-        body {
-            background: #313f64;
-            max-width: 1040px;
-            margin: auto;
-        }
-        body.modal-open {
-            overflow: inherit !important;
-        }
-        #tabs {
-            margin-top: 20px;
-            margin-bottom: 40px;
-        }
-        #tabs .nav-link {
-            color: #cadfff;
-        }
-        #tabs .nav-link.active {
-          color: #313f64;
-        }
-        button {
-          white-space: nowrap;
-        }
-        #preview {
-            background: #1f204f;
-            color: #ffffff;
-            padding: 8px 12px;
-            min-height: 254px;
-            max-width: 400px;
-            display: block;
-            cursor: not-allowed;
-            -webkit-touch-callout: none; /* iOS Safari */
-            -webkit-user-select: none; /* Safari */
-            -khtml-user-select: none; /* Konqueror HTML */
-            -moz-user-select: none; /* Old versions of Firefox */
-            -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
-        }
-        input, textarea {
-            border-color: #212248 !important;
-        }
-        h1, h2 {
-            color: #cadfff;
-            margin: 20px 0;
-        }
-        [data-jscolor] {
-            border-width: 1px;
-            border-color: #cadfff !important;
-        }
-        .form-control {
-            border-width: 1px;
-            border-color: #cadfff !important;
-        }
-        .char-button {
-            margin: 4px 4px 4px 0;
-            width: 40px;
-        }
-        .char-button.btn.default-color {
-          margin: 0;
-          border-width: 0;
-        }
-        .emote-button {
-            font-size: 20px;
-            padding: 0 4px;
-            margin: 0 4px 4px 0;
-            width: 35px;
-        }
-        #single-generate {
-            height: 40px;
-            line-height: 26px;
-        }
-        #single-color {
-            border-radius: 6px 0 0 6px;
-        }
-        .character-count {
-            color: #cadfff;
-            padding: 6px 10px;
-            font-style: italic;
-        }
-        #character-count.text-error {
-            color: red;
-        }
-        .btn.default-color {
-            background-color: #ffffff;
-            width: auto;
-        }
-        #bottle-colors {
-            display: block;
-            width: 200px;
-            float: left;
-        }
-        #bottle-colors .color-div {
-            display: flex;
-            align-items: center;
-            width: 90px;
-            height: 60px;
-            float: left;
-        }
-        #bottle-colors .color-div .color {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-        }
-        #bottle-colors .color-div .number {
-            display: inline-block;
-            color: #aabfdf;
-            font-size: 20px;
-            padding-left: 8px;
-            line-height: 40px;
-        }
-        #bottles {
-            display: block;
-            text-align: center;
-            width: 600px;
-            margin-right: 40px;
-            float: left;
-        }
-        #bottles .bottle {
-            border: 1px solid #aabfdf;
-            border-width: 0 2px 2px;
-            border-radius: 0 0 30px 30px;
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 280px;
-            margin: 0 15px 40px;
-            overflow: hidden;
-        }
-        #bottles .bottle .color {
-            position: absolute;
-            left: 0;
-            height: 60px;
-            width: 60px;
-            border-top: 1px dashed #aabfdf;
-            cursor: pointer;
-            background: repeating-linear-gradient(
-              45deg,
-            #39448a,
-            #39448a 10.5px,
-            #283163 10.5px,
-            #283163 21px
-            );
-        }
-        #bottles .bottle .color {
-            bottom: 0;
-        }
-        #bottles .bottle .color + .color {
-            bottom: 60px;
-        }
-        #bottles .bottle .color + .color + .color {
-            bottom: 120px;
-        }
-        #bottles .bottle .color + .color + .color + .color {
-            bottom: 180px;
-        }
-        #bottles .bottle .index {
-            position: absolute;
-            top: 0;
-            left: 0;
-            text-align: center;
-            height: 30px;
-            width: 60px;
-            color: #cadfff;
-            font-weight: bold;
-            font-size: 24px;
-            margin-top: -8px;
-        }
-        #color-modal .modal-dialog {
-            width: 272px;
-            margin-top: 160px;
-        }
-        #color-modal .modal-body {
-            padding: 3px;
-        }
-        #color-modal .color-button {
-            cursor: pointer;
-            display: inline-block;
-            height: 60px;
-            width: 60px;
-            margin: 3px;
-        }
-        #solve {
-          color: #cadfff;
-          display: none;
-        }
-        #solve-moves li {
-          list-style-type: none;
-          padding-left: 0;
-          margin-left: -20px;
-        }
-        #solve-moves input {
-          margin-right: 6px;
-        }
-        #solve-moves .checked {
-          text-decoration: line-through;
-          font-style: italic;
-        }
-    </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZST9R8QK4X"></script>
     <script>
@@ -216,132 +20,52 @@
 <body>
     <ul class="nav nav-tabs" id="tabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <a class="nav-link active" href="index.html">Texte</a>
-      </li>
-      <li class="nav-item" role="presentation">
-        <a class="nav-link" href="tubes.html">Medusa Vials</a>
+        <a class="nav-link active" href="index.html">Medusa Vials</a>
       </li>
       <li class="nav-item" role="presentation">
         <a class="nav-link" href="games.html">Game Center Vials</a>
       </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="text.html">Texte</a>
+      </li>
     </ul>
-    <div class="tab-content" id="tab-contents">
-        <div class="tab-pane fade active show" id="text-content" role="tabpanel" aria-labelledby="text-tab">
-            <div class="container-fluid" style="padding-bottom: 100px;">
-            <div class="row">
-                <div class="col-6">
-                    <div class="row">
-                        <div class="col">
-                            <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copier</button>
-                            <span class="float-end character-count"><span id="character-count">0</span> / 800</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div id="preview" title="Preview"></div>
-                </div>
-                <div>
-                  <span style="background: #FFC336FF"></span>
-                  <span style="background: #FF4DEAFF"></span>
-                </div>
+
+    <div class="container-fluid" style="padding-bottom: 100px;">
+        <div class="row">
+            <div class="col-12">
+                <div id="bottles"></div>
+                <div id="bottle-colors"></div>
             </div>
-            <div class="row">
-                <div class="input-group">
-                    <input id="single-color" value="#cadfff" data-jscolor="{}" />
-                    <button id="single-generate" class="btn btn-primary"><i class="fa fa-plus"></i></button>
-                    <button class="char-button btn btn-light default-color" data-char="[[-]ffffff]">Blanc</button>
-                </div>
+            <div class="col-12">
+              <button id="add-bottle" class="btn btn-primary">+1 tube</button>
+              <button id="remove-bottle" class="btn btn-primary">-1 tube</button>
+              <button id="solve-button" class="btn btn-success">Solution</button>
             </div>
-            <div class="row">
-                <div class="input-group">
-                    <button class="char-button btn btn-light" data-char="[[-]B]"><b>B</b></button>
-                    <button class="char-button btn btn-secondary" data-char="[[-]/B]"><b>-B</b></button>
-                    <button class="char-button btn btn-light" data-char="[[-]I]"><i>I</i></button>
-                    <button class="char-button btn btn-secondary" data-char="[[-]/I]"><i>-I</i></button>
-                    <button class="char-button btn btn-light" data-char="[[-]U]"><u>U</u></button>
-                    <button class="char-button btn btn-secondary" data-char="[[-]/U]"><u>-U</u></button>
-                    <button class="char-button btn btn-light" data-char="[[-]S]"><s>S</s></button>
-                    <button class="char-button btn btn-secondary" data-char="[[-]/S]"><s>-S</s></button>
-                </div>
+            <div class="col-12 color-errors hide">
+              <div class="invalid-feedback incomplete-tubes">
+                Certains tubes sont incomplets.
+              </div>
+              <div class="invalid-feedback empty-tubes">
+                Au moins 2 tubes vides sont nécessaires.
+              </div>
+              <div class="invalid-feedback incomplete-colors">
+                Chaque couleur doit être présente 4 fois.
+              </div>
+              <div class="invalid-feedback missing-tubes">
+                Des tubes doivent être remplis.
+              </div>
             </div>
-            <div class="row">
-                <div class="col-6" id="emotes">
-                </div>
-                <div class="col-6" id="ascii">
-                </div>
+            <div class="col-12" id="solve">
+              <b>Solution : </b>
+              <ul id="solve-moves"></ul>
+              <small><i>
+                Temps : <span id="solve-time"></span> secondes<br>
+                Complexité : <span id="solve-complexity"></span><br>
+                Lien : <a id="solve-puzzle"></a>
+              </i></small>
             </div>
-            <!--
-            <div class="row">
-                <h2><br />Gradient</h2>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text">From</span>
-                        <input id="gradient-start" value="#cadfffff" data-jscolor="{}" />
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">To</span>
-                        <input id="gradient-end" value="#cadfffff" data-jscolor="{}" />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text">Text</span>
-                        <input id="gradient-text" class="form-control" type="text" />
-                        <button id="gradient-generate" class="btn btn-primary">Boom</button>
-                    </div>
-                </div>
-            </div>
-          -->
-        </div>
-        </div>
-        <div class="tab-pane fade" id="tubes" role="tabpanel" aria-labelledby="tubes-tab">
-            <div class="container-fluid" style="padding-bottom: 100px;">
-                <div class="row">
-                    <div class="col-12">
-                        <div id="bottles"></div>
-                        <div id="bottle-colors"></div>
-                    </div>
-                    <div class="col-12">
-                      <button id="add-bottle" class="btn btn-primary">+1 tube</button>
-                      <button id="remove-bottle" class="btn btn-primary">-1 tube</button>
-                      <button id="solve-button" class="btn btn-success">Solution</button>
-                    </div>
-                    <div class="col-12 color-errors hide">
-                      <div class="invalid-feedback incomplete-tubes">
-                        Certains tubes sont incomplets.
-                      </div>
-                      <div class="invalid-feedback empty-tubes">
-                        Au moins 2 tubes vides sont nécessaires.
-                      </div>
-                      <div class="invalid-feedback incomplete-colors">
-                        Chaque couleur doit être présente 4 fois.
-                      </div>
-                      <div class="invalid-feedback missing-tubes">
-                        Des tubes doivent être remplis.
-                      </div>
-                    </div>
-                    <div class="col-12" id="solve">
-                      <b>Solution : </b>
-                      <ul id="solve-moves"></ul>
-                      <small><i>
-                        Temps : <span id="solve-time"></span> secondes<br>
-                        Complexité : <span id="solve-complexity"></span><br>
-                        Lien : <a id="solve-puzzle"></a>
-                      </i></small>
-                    </div>
-                    <div class="col-12">
-                      <a href="?tab=tubes" class="btn btn-danger" style="margin-top: 40px;">Reset</a>
-                    </div>
-                </div>
+            <div class="col-12">
+              <a href="index.html" class="btn btn-danger" style="margin-top: 40px;">Reset</a>
             </div>
         </div>
     </div>
@@ -354,7 +78,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <script id="bottle-template" type="text/template">
     <div class="bottle">
@@ -371,226 +94,34 @@
         <span class="number"></span>
     </div>
 </script>
-
-<script src="puzzle.js"></script>
-
-<!-- TEXT EDITING -->
 <script>
-  jscolor.presets.default = {
-    format:'hex',
-    required: false,
+  window.PUZZLE_OPTIONS = {
+    baseColors: {
+      A: '#126165', // GREEN
+      B: '#f28a29', // ORANGE
+      C: '#0a5cd9', // BLUE
+      D: '#ecba03', // YELLOW
+      E: '#b8170d', // RED
+      F: '#48be2c', // LGREEN
+      G: '#5fa9ea', // LBLUE
+      H: '#681c36', // BROWN
+      I: '#892ed1', // PURPLE
+      J: '#ffd1b7', // PALE
+      K: '#e099df', // PINK
+      L: '#eb5e7e', // FRUIT
+      M: '#463bc6', // BLURPLE
+      N: '#6a696e', // GREY
+      Z: '' // EMPTY  
+    },
+    updateHistory: function (hashBottles) {
+      const hashQuery = hashBottles.match(/^Z+$/) ? '' : '?q=' + hashBottles;
+      history.pushState({}, '', window.location.pathname + hashQuery);
+    },
+    buildPuzzleLink: function (hash) {
+      return window.location.origin + window.location.pathname + '?q=' + hash;
+    }
   };
-
-    $(function() {
-      const preview = $('#preview')[0];
-      const raw = $('#raw-code')[0];
-      const count = $('#character-count')[0];
-      const maxLineLength = 54;
-
-      const colorRegexp = /\[\[-\]([0-9a-fA-F]{6})\]([^[\n]*)/gi;
-      const fontRegexp = /\[\[-\](\/?[IUBS])\]/gi;
-      const emoteRegexp = /(\[\[-\]\#\d\d\])/gi;
-
-      const baseColor = '#cadfff';
-      const baseColorFull = '[[-] ' + baseColor.replace('#', '') + ']';
-      const clipboard = new ClipboardJS('.btn');
-      const emotes = {
-        '[[-]#01]': '💦',
-        '[[-]#02]': '💥',
-        '[[-]#03]': '💔',
-        '[[-]#04]': '🍻',
-        '[[-]#05]': '🌹',
-        '[[-]#06]': '❤',
-        '[[-]#07]': '😀',
-        '[[-]#08]': '😭',
-        '[[-]#09]': '😌',
-        '[[-]#10]': '😵',
-        '[[-]#11]': '😋',
-        '[[-]#12]': '😂',
-        '[[-]#13]': '😄',
-        '[[-]#14]': '😫',
-        '[[-]#15]': '😁',
-        '[[-]#16]': '😃',
-        '[[-]#17]': '😰',
-        '[[-]#18]': '😢',
-        '[[-]#19]': '😳',
-        '[[-]#20]': '😤',
-        '[[-]#21]': '🌚',
-        '[[-]#22]': '😣',
-        '[[-]#23]': '😯',
-        '[[-]#24]': '😡',
-        '[[-]#25]': '😠',
-        '[[-]#26]': '😟',
-        '[[-]#27]': '😞',
-        '[[-]#28]': '😝',
-        '[[-]#29]': '😈',
-        '[[-]#30]': '😚',
-        '[[-]#31]': '😘',
-        '[[-]#32]': '😗',
-        '[[-]#33]': '😖',
-        '[[-]#34]': '🙁',
-        '[[-]#35]': '😔',
-        '[[-]#36]': '😇',
-        '[[-]#37]': '😴',
-        '[[-]#38]': '😓',
-        '[[-]#39]': '😒',
-        '[[-]#40]': '😑',
-        '[[-]#41]': '🔥',
-        '[[-]#42]': '😏',
-        '[[-]#43]': '😎',
-        '[[-]#44]': '😍',
-        '[[-]#45]': '💋',
-        '[[-]#46]': '✨',
-        '[[-]#47]': '🎂',
-        '[[-]#48]': '❓',
-        '[[-]#49]': '🐷',
-        '[[-]#50]': '😊',
-        '[[-]#51]': '😃',
-        '[[-]#53]': '😉',
-        '[[-]#54]': '😜',
-        '[[-]#55]': '😨',
-        '[[-]#56]': '😱',
-        '[[-]#57]': '😪',
-        '[[-]#58]': '😷',
-        '[[-]#59]': '💤',
-        '[[-]#60]': '🎵',
-        '[[-]#61]': '💩',
-        '[[-]#62]': '👍',
-        '[[-]#63]': '👎',
-        '[[-]#65]': '👊',
-        '[[-]#66]': '✊',
-        '[[-]#67]': '✌',
-        '[[-]#68]': '👋',
-        '[[-]#69]': '✋',
-        '[[-]#70]': '👐',
-        '[[-]#71]': '👇',
-        '[[-]#72]': '👆',
-        '[[-]#73]': '👉',
-        '[[-]#74]': '👈',
-        '[[-]#75]': '🙌',
-        '[[-]#76]': '🙏',
-        '[[-]#77]': '☝',
-        '[[-]#78]': '👏',
-        '[[-]#79]': '💪',
-        '[[-]#80]': '👩‍❤️‍👨',
-        '[[-]#81]': '👩‍❤️‍💋‍👨',
-        '[[-]#82]': '🌹',
-        '[[-]#83]': '👀',
-        '[[-]#84]': '👌',
-      };
-      const ascii = '▀▁▂▃▄▅▆▇█▉▊▋▌▍▎▏'
-        + '▐░▒▓▔▕▖▗▘▙▚▛▜▝▞▟'
-        + '◢◣◥◤↑↓←→↖↗↙↘△▲▽▼▶▷◀◁';
-
-      // adapting the url for refreshing and browser remembering purposes
-      $('#text-tab').on('click', () => {
-        location.href = location.origin + location.pathname + '?tab=text-content';
-      })
-      
-      let i = 0;
-      $.each(emotes, function (char, icon) {
-        $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
-      });
-      i = 0;
-      $.each(ascii.split(''), function (index, char) {
-        $('#ascii').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + char + '</button>');
-      });
-
-      function checkLineLength(text) {
-        const lines = $(raw).val().split("\n");
-        const lastLine = lines.length > 0 ? lines[lines.length - 1] : null;
-
-        if ((lastLine.length + text.length) > maxLineLength) {
-          $(raw).val($(raw).val() + "\n");
-        }
-      }
-
-      function appendText(text) {
-        checkLineLength(text);
-        console.log(raw.selectionStart)
-        if (raw.selectionStart) {
-          const before = $(raw).val().substring(0, raw.selectionStart);
-          const after = $(raw).val().substring(raw.selectionStart, raw.length);
-          $(raw).val(before + text + after);
-        } else {
-          $(raw).val($(raw).val() + text);
-        }
-
-        $(raw).trigger('change');
-        $(raw).focus();
-      }
-
-      function updatePreview() {
-        $(preview).html(
-          $(raw).val()
-            .replaceAll(colorRegexp, '<span style="color: #$1;">$2</span>')
-            .replaceAll(fontRegexp, '<$1>')
-            .replaceAll(emoteRegexp, (match) => emotes[match])
-            .replaceAll(/\n/g, '</i></b></u></s><br>')
-        );
-        const charCount = $(raw).val().length;
-        $(count).html(charCount);
-        $(count).toggleClass('text-error', charCount > 800);
-
-        const hashQuery = '?tab=text-content&q=' + $(raw).val();
-        history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
-      }
-
-      $(raw).on('keyup change', function(event) {
-        updatePreview();
-      });
-
-      $('body').on('click', '.char-button, .emote-button', function() {
-        appendText($(this).data('char'));
-      })
-
-      $('#single-generate').on('click', () => {
-        const code = $('#single-color').val().replace('#', '');
-        appendText('[[-]' + code + ']');
-      })
-
-      $('#gradient-generate').on('click', () => {
-        const start = new Color($('#gradient-start').val());
-        const end = new Color($('#gradient-end').val());
-        const text = $('#gradient-text').val();
-        const textSize = text.length;
-
-        if (textSize <= 0) {
-          return;
-        }
-
-        const diff = {
-          red: {
-            start: parseInt(start.srgb.r * 255),
-            end: parseInt(end.srgb.r * 255),
-            step: parseInt((end.srgb.r - start.srgb.r) * 255 / textSize),
-          },
-          green: {
-            start: parseInt(start.srgb.g * 255),
-            end: parseInt(end.srgb.g * 255),
-            step: parseInt((end.srgb.g - start.srgb.g) * 255 / textSize),
-          },
-          blue: {
-            start: parseInt(start.srgb.b * 255),
-            end: parseInt(end.srgb.b * 255),
-            step: parseInt((end.srgb.b - start.srgb.b) * 255 / textSize),
-          },
-        }
-
-        let rendered = '';
-        for (let i = 0; i < textSize; i++) {
-          const red = Number(diff.red.start + diff.red.step * i).toString(16).padStart(2, '0');
-          const green = Number(diff.green.start + diff.green.step * i).toString(16).padStart(2, '0');
-          const blue = Number(diff.blue.start + diff.blue.step * i).toString(16).padStart(2, '0');
-
-          rendered += '[[-]' + red + green + blue + ']' + text[i];
-        }
-
-        rendered += baseColorFull;
-
-        appendText(rendered);
-      });
-    })
 </script>
+<script src="puzzle.js"></script>
 </body>
 </html>
