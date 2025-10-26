@@ -305,48 +305,6 @@
             </div>
           -->
         </div>
-        </div>
-        <div class="tab-pane fade" id="tubes" role="tabpanel" aria-labelledby="tubes-tab">
-            <div class="container-fluid" style="padding-bottom: 100px;">
-                <div class="row">
-                    <div class="col-12">
-                        <div id="bottles"></div>
-                        <div id="bottle-colors"></div>
-                    </div>
-                    <div class="col-12">
-                      <button id="add-bottle" class="btn btn-primary">+1 tube</button>
-                      <button id="remove-bottle" class="btn btn-primary">-1 tube</button>
-                      <button id="solve-button" class="btn btn-success">Solution</button>
-                    </div>
-                    <div class="col-12 color-errors hide">
-                      <div class="invalid-feedback incomplete-tubes">
-                        Certains tubes sont incomplets.
-                      </div>
-                      <div class="invalid-feedback empty-tubes">
-                        Au moins 2 tubes vides sont nécessaires.
-                      </div>
-                      <div class="invalid-feedback incomplete-colors">
-                        Chaque couleur doit être présente 4 fois.
-                      </div>
-                      <div class="invalid-feedback missing-tubes">
-                        Des tubes doivent être remplis.
-                      </div>
-                    </div>
-                    <div class="col-12" id="solve">
-                      <b>Solution : </b>
-                      <ul id="solve-moves"></ul>
-                      <small><i>
-                        Temps : <span id="solve-time"></span> secondes<br>
-                        Complexité : <span id="solve-complexity"></span><br>
-                        Lien : <a id="solve-puzzle"></a>
-                      </i></small>
-                    </div>
-                    <div class="col-12">
-                      <a href="?tab=tubes" class="btn btn-danger" style="margin-top: 40px;">Reset</a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="modal" id="color-modal" tabindex="-1" aria-hidden="true">
@@ -485,11 +443,6 @@
         + '▐░▒▓▔▕▖▗▘▙▚▛▜▝▞▟'
         + '◢◣◥◤↑↓←→↖↗↙↘△▲▽▼▶▷◀◁';
 
-      // adapting the url for refreshing and browser remembering purposes
-      $('#text-tab').on('click', () => {
-        location.href = location.origin + location.pathname + '?tab=text-content';
-      })
-      
       let i = 0;
       $.each(emotes, function (char, icon) {
         $('#emotes').append('<button class="btn btn-sm btn-light emote-button" data-char="' + char + '">' + icon + '</button>');
@@ -524,6 +477,7 @@
       }
 
       function updatePreview() {
+        console.log($(preview).html(), $(raw).val());
         $(preview).html(
           $(raw).val()
             .replaceAll(colorRegexp, '<span style="color: #$1;">$2</span>')
@@ -534,9 +488,6 @@
         const charCount = $(raw).val().length;
         $(count).html(charCount);
         $(count).toggleClass('text-error', charCount > 800);
-
-        const hashQuery = '?tab=text-content&q=' + $(raw).val();
-        history.pushState({}, '', window.location.origin + window.location.pathname + hashQuery);
       }
 
       $(raw).on('keyup change', function(event) {
