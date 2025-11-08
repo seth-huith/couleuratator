@@ -623,7 +623,7 @@
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', '4');
       circle.setAttribute('cy', '4');
-      circle.setAttribute('r', '2');
+      circle.setAttribute('r', '1.2');
       circle.setAttribute('fill', color || '#ffffff');
       circle.setAttribute('stroke', '#000000');
       circle.setAttribute('stroke-width', '0.2');
@@ -669,7 +669,7 @@
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', pathData);
       path.setAttribute('stroke', color || '#ffffff');
-      path.setAttribute('stroke-width', '4');
+      path.setAttribute('stroke-width', '7');
       path.setAttribute('fill', 'none');
       path.setAttribute('marker-end', 'url(#arrowhead)');
       path.setAttribute('opacity', '0.95');
