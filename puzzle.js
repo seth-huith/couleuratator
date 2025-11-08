@@ -689,6 +689,18 @@
       dottedPath.setAttribute('class', 'dashed');
 
       svg.append(dottedPath);
+
+      // Add circle at starting position
+      const startCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      startCircle.setAttribute('cx', from.x + 3);
+      startCircle.setAttribute('cy', from.y - 2);
+      startCircle.setAttribute('r', '6');
+      startCircle.setAttribute('stroke', '#000000');
+      startCircle.setAttribute('stroke-width', '2');
+      startCircle.setAttribute('fill', '#000000');
+      startCircle.setAttribute('opacity', '0.4');
+
+      svg.append(startCircle);
     }
 
     function renderVisualBottles(bottles, highlightFrom = -1, highlightTo = -1, transferColor = null) {
