@@ -625,9 +625,9 @@
       circle.setAttribute('cy', '4');
       circle.setAttribute('r', '2');
       circle.setAttribute('fill', color || '#ffffff');
-      circle.setAttribute('stroke', '#ffffff');
-      circle.setAttribute('stroke-width', '0.5');
-      circle.setAttribute('stroke-opacity', '0.6');
+      circle.setAttribute('stroke', '#000000');
+      circle.setAttribute('stroke-width', '0.2');
+      circle.setAttribute('stroke-opacity', '0.5');
 
       marker.appendChild(circle);
       defs.appendChild(marker);
