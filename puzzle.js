@@ -680,12 +680,12 @@
       const dottedPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       dottedPath.setAttribute('d', pathData);
       dottedPath.setAttribute('stroke', '#000000');
-      dottedPath.setAttribute('stroke-width', '3');
+      dottedPath.setAttribute('stroke-width', '5');
       dottedPath.setAttribute('fill', 'none');
       dottedPath.setAttribute('stroke-dasharray', '1 10');
       dottedPath.setAttribute('stroke-dashoffset', '20');
       dottedPath.setAttribute('stroke-linecap', 'round');
-      dottedPath.setAttribute('opacity', '0.25');
+      dottedPath.setAttribute('opacity', '0.35');
       dottedPath.setAttribute('class', 'dashed');
 
       svg.append(dottedPath);
