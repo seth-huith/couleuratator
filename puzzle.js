@@ -169,8 +169,49 @@
     const empty = 'Z';
     let colorElement = null;
 
-    $('#bottles').on('click', '.color', function () {
+    $('#bottles').on('click', '.color', function (e) {
       colorElement = $(this);
+
+      // Position modal at click location
+      const modalDialog = $('#color-modal .modal-dialog');
+      const modalWidth = 272;
+      const modalHeight = 272;
+
+      let clickX = e.pageX;
+      let clickY = e.pageY;
+
+      // Ensure modal stays within viewport
+      const viewportWidth = $(window).width();
+      const viewportHeight = $(window).height();
+      const scrollTop = $(window).scrollTop();
+
+      // Adjust X position if too close to right edge
+      if (clickX + modalWidth / 2 > viewportWidth) {
+        clickX = viewportWidth - modalWidth / 2 - 10;
+      }
+      // Adjust X position if too close to left edge
+      if (clickX - modalWidth / 2 < 0) {
+        clickX = modalWidth / 2 + 10;
+      }
+
+      // Adjust Y position if too close to bottom edge
+      if (clickY + modalHeight / 2 > scrollTop + viewportHeight) {
+        clickY = scrollTop + viewportHeight - modalHeight / 2 - 10;
+      }
+      // Adjust Y position if too close to top edge
+      if (clickY - modalHeight / 2 < scrollTop) {
+        clickY = scrollTop + modalHeight / 2 + 10;
+      }
+
+      // Position at click with centering transform
+      modalDialog.css({
+        'position': 'fixed',
+        'left': (clickX - $(window).scrollLeft()) + 'px',
+        'top': (clickY - scrollTop) + 'px',
+        'margin': '0',
+        'transform': 'translate(-50%, -50%)'
+      });
+
       colorModal.show();
     });
     $('#color-modal').on('click', '.color-button', function () {
@@ -409,8 +450,54 @@
       }
     });
 
-    $('#solve-moves').on('change', 'input', function () {
-      $(this).closest('li').toggleClass('checked', $(this).is(':checked'));
+    $('#solve-moves').on('change', 'input[type="checkbox"]', function () {
+      const checkbox = $(this);
+      const listItem = checkbox.closest('li');
+      const stepIndex = $('#solve-moves li').index(listItem) + 1; // +1 because steps start at 1
+
+      // Ignore if we're syncing from visualizer
+      if (typeof visualState !== 'undefined' && visualState.syncingCheckboxes) {
+        return;
+      }
+
+      if (checkbox.is(':checked')) {
+        // Only allow checking the next unchecked step
+        const previousCheckboxes = $('#solve-moves input[type="checkbox"]').slice(0, stepIndex - 1);
+        const allPreviousChecked = previousCheckboxes.toArray().every(cb => $(cb).is(':checked'));
+
+        if (!allPreviousChecked) {
+          // Prevent checking if previous steps aren't checked
+          checkbox.prop('checked', false);
+          return;
+        }
+
+        listItem.addClass('checked');
+
+        // Checking checkbox N means completing move N, so advance to step N+1
+        if ($('#visual-solver').is(':visible') && typeof visualState !== 'undefined') {
+          goToStep(stepIndex + 1);
+        }
+      } else {
+        // Unchecking checkbox N means undoing move N, so go back to step N
+        if (typeof visualState !== 'undefined') {
+          visualState.syncingCheckboxes = true;
+        }
+
+        listItem.removeClass('checked');
+        $('#solve-moves li').slice(stepIndex).each(function() {
+          $(this).find('input[type="checkbox"]').prop('checked', false);
+          $(this).removeClass('checked');
+        });
+
+        if (typeof visualState !== 'undefined') {
+          visualState.syncingCheckboxes = false;
+        }
+
+        // Move visualizer to show the state before this move
+        if ($('#visual-solver').is(':visible') && typeof visualState !== 'undefined') {
+          goToStep(stepIndex);
+        }
+      }
     });
 
     /* ------------------ VISUAL SOLVER ------------------ */
@@ -418,7 +505,8 @@
       initialBottles: [],
       moves: [],
       currentStep: 1,
-      playInterval: null
+      playInterval: null,
+      syncingCheckboxes: false
     };
 
     function applyMove(bottles, move) {
@@ -505,51 +593,77 @@
       const svg = $('#move-arrows');
       svg.empty();
 
-      // Create arrowhead marker
+      // Create arrowhead marker and shadow filter
       const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+      // Shadow filter for shadow line
+      const shadowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+      shadowFilter.setAttribute('id', 'shadow-blur');
+      shadowFilter.setAttribute('x', '-50%');
+      shadowFilter.setAttribute('y', '-50%');
+      shadowFilter.setAttribute('width', '200%');
+      shadowFilter.setAttribute('height', '200%');
+
+      const feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+      feGaussianBlur.setAttribute('in', 'SourceGraphic');
+      feGaussianBlur.setAttribute('stdDeviation', '2');
+
+      shadowFilter.appendChild(feGaussianBlur);
+      defs.appendChild(shadowFilter);
+
       const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
       marker.setAttribute('id', 'arrowhead');
-      marker.setAttribute('markerWidth', '10');
-      marker.setAttribute('markerHeight', '10');
-      marker.setAttribute('refX', '9');
-      marker.setAttribute('refY', '3');
+      marker.setAttribute('markerWidth', '8');
+      marker.setAttribute('markerHeight', '8');
+      marker.setAttribute('refX', '4');
+      marker.setAttribute('refY', '4');
       marker.setAttribute('orient', 'auto');
       marker.setAttribute('markerUnits', 'strokeWidth');
 
-      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      polygon.setAttribute('points', '0 0, 10 3, 0 6');
-      polygon.setAttribute('fill', color || '#ffffff');
-      polygon.setAttribute('stroke', '#000000');
-      polygon.setAttribute('stroke-width', '0.5');
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', '4');
+      circle.setAttribute('cy', '4');
+      circle.setAttribute('r', '2');
+      circle.setAttribute('fill', color || '#ffffff');
+      circle.setAttribute('stroke', '#ffffff');
+      circle.setAttribute('stroke-width', '0.5');
+      circle.setAttribute('stroke-opacity', '0.6');
 
-      marker.appendChild(polygon);
+      marker.appendChild(circle);
       defs.appendChild(marker);
       svg.append(defs);
 
       const from = getBottlePosition(fromIndex, fromColorIndex);
       const to = getBottlePosition(toIndex, toColorIndex);
 
+      // Adapt arrow position
+      to.x += 3;
+      to.y -= 4;
+
       // Calculate control point for curved arrow
       const dx = to.x - from.x;
       const dy = to.y - from.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      // Control point for bezier curve (curved upward)
-      const curvature = Math.min(100, distance * 0.3);
+      // Control point for bezier curve (curved upward more)
+      const curvature = Math.min(150, distance * 0.5);
       const midX = (from.x + to.x) / 2;
       const midY = (from.y + to.y) / 2 - curvature;
 
       // Create curved path data
       const pathData = `M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`;
 
-      // Draw outline/shadow path first
-      const outlinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      outlinePath.setAttribute('d', pathData);
-      outlinePath.setAttribute('stroke', '#000000');
-      outlinePath.setAttribute('stroke-width', '6');
-      outlinePath.setAttribute('fill', 'none');
-      outlinePath.setAttribute('opacity', '0.5');
-      svg.append(outlinePath);
+      // Draw straight shadow line first (wider with drop shadow)
+      const shadowLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      shadowLine.setAttribute('x1', from.x);
+      shadowLine.setAttribute('y1', from.y);
+      shadowLine.setAttribute('x2', to.x);
+      shadowLine.setAttribute('y2', to.y);
+      shadowLine.setAttribute('stroke', '#000000');
+      shadowLine.setAttribute('stroke-width', '4');
+      shadowLine.setAttribute('opacity', '0.35');
+      shadowLine.setAttribute('filter', 'url(#shadow-blur)');
+      svg.append(shadowLine);
 
       // Create main colored path
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -561,6 +675,20 @@
       path.setAttribute('opacity', '0.95');
 
       svg.append(path);
+
+      // Add moving dotted line overlay
+      const dottedPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      dottedPath.setAttribute('d', pathData);
+      dottedPath.setAttribute('stroke', '#000000');
+      dottedPath.setAttribute('stroke-width', '3');
+      dottedPath.setAttribute('fill', 'none');
+      dottedPath.setAttribute('stroke-dasharray', '1 10');
+      dottedPath.setAttribute('stroke-dashoffset', '20');
+      dottedPath.setAttribute('stroke-linecap', 'round');
+      dottedPath.setAttribute('opacity', '0.25');
+      dottedPath.setAttribute('class', 'dashed');
+
+      svg.append(dottedPath);
     }
 
     function renderVisualBottles(bottles, highlightFrom = -1, highlightTo = -1, transferColor = null) {
@@ -673,6 +801,20 @@
       // Update button states
       $('#step-first, #step-prev').prop('disabled', step === 1);
       $('#step-next, #step-last').prop('disabled', step === visualState.moves.length);
+
+      // Synchronize checkboxes: check all moves that have been completed
+      // At step N, we show state before move N, so moves 1 through N-1 are completed
+      visualState.syncingCheckboxes = true;
+      $('#solve-moves input[type="checkbox"]').each(function(index) {
+        const shouldBeChecked = index < (step - 1);
+        const isChecked = $(this).is(':checked');
+
+        if (shouldBeChecked !== isChecked) {
+          $(this).prop('checked', shouldBeChecked);
+          $(this).closest('li').toggleClass('checked', shouldBeChecked);
+        }
+      });
+      visualState.syncingCheckboxes = false;
     }
 
     function startPlayback() {
@@ -702,10 +844,12 @@
       visualState.initialBottles = initialBottles.map(b => [...b]);
       visualState.moves = moves;
       visualState.currentStep = 1;
+      visualState.syncingCheckboxes = false;
 
       $('#visual-solver').show();
       $('#total-steps').text(moves.length);
 
+      // Initialize with first step, which will check the first checkbox
       goToStep(1);
 
       // Smooth scroll to visual solver

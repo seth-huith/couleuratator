@@ -165,7 +165,6 @@ h1, h2 {
 }
 #color-modal .modal-dialog {
     width: 272px;
-    margin-top: 160px;
 }
 #color-modal .modal-body {
     padding: 3px;
@@ -283,18 +282,16 @@ h1, h2 {
   font-size: 16px;
 }
 
-/* Arrow blinking animation */
-@keyframes arrowBlink {
-  0%, 100% {
-    opacity: 0.95;
-    filter: brightness(1);
+/* Moving dashed line animation */
+@keyframes dashMove {
+  0% {
+    stroke-dashoffset: 20;
   }
-  50% {
-    opacity: 0.7;
-    filter: brightness(1.8);
+  100% {
+    stroke-dashoffset: 0;
   }
 }
 
-#move-arrows path {
-  animation: arrowBlink 0.8s ease-in-out infinite;
+#move-arrows path.dashed {
+  animation: dashMove 0.8s linear infinite;
 }
