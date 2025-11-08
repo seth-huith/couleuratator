@@ -402,12 +402,384 @@
         });
         if (result.moves.length === 0) {
           $('#solve-moves').append('<li>Aucune solution trouvée 😟</li>');
+        } else {
+          // Initialize visual solver
+          initVisualSolver(data, result.moves);
         }
       }
     });
 
     $('#solve-moves').on('change', 'input', function () {
       $(this).closest('li').toggleClass('checked', $(this).is(':checked'));
+    });
+
+    /* ------------------ VISUAL SOLVER ------------------ */
+    let visualState = {
+      initialBottles: [],
+      moves: [],
+      currentStep: 1,
+      playInterval: null
+    };
+
+    function applyMove(bottles, move) {
+      const [from, to] = move;
+      const newBottles = bottles.map(b => [...b]);
+
+      // Find top color from source bottle
+      let topColor = empty;
+      let moveCount = 0;
+
+      for (let i = 3; i >= 0; i--) {
+        if (newBottles[from][i] !== empty) {
+          topColor = newBottles[from][i];
+          break;
+        }
+      }
+
+      // Count how many of this color to move
+      for (let i = 3; i >= 0; i--) {
+        if (newBottles[from][i] === topColor) {
+          moveCount++;
+        } else if (newBottles[from][i] !== empty) {
+          break;
+        }
+      }
+
+      // Remove from source
+      let removed = 0;
+      for (let i = 3; i >= 0 && removed < moveCount; i--) {
+        if (newBottles[from][i] === topColor) {
+          newBottles[from][i] = empty;
+          removed++;
+        }
+      }
+
+      // Add to destination
+      let added = 0;
+      for (let i = 0; i < 4 && added < moveCount; i++) {
+        if (newBottles[to][i] === empty) {
+          newBottles[to][i] = topColor;
+          added++;
+        }
+      }
+
+      return newBottles;
+    }
+
+    function getBottlePosition(index, colorIndex = null) {
+      const bottles = $('#visual-bottles .bottle');
+      if (index >= bottles.length) return { x: 0, y: 0 };
+
+      const bottle = bottles.eq(index);
+      const bottleOffset = bottle.offset();
+      const containerOffset = $('#visual-bottles-container').offset();
+
+      // Get horizontal center of bottle
+      const x = bottleOffset.left - containerOffset.left + bottle.width() / 2;
+
+      let y;
+      if (colorIndex !== null) {
+        // Get position of specific color segment
+        // Each segment is 40px tall, positioned from bottom
+        // colorIndex 0 = bottom, 1 = second from bottom, etc.
+        const segmentHeight = 40;
+        const bottleHeight = 186;
+        const indexHeight = 25; // height of index number at top
+
+        // Calculate y position for the center of the specific segment
+        // The bottle top is at bottleOffset.top
+        // Segments are positioned from bottom, so we need to calculate from top
+        const bottomOfSegment = bottleHeight - (colorIndex * segmentHeight);
+        const centerOfSegment = bottomOfSegment - (segmentHeight / 2);
+
+        y = bottleOffset.top - containerOffset.top + centerOfSegment;
+      } else {
+        // Get center of bottle
+        y = bottleOffset.top - containerOffset.top + bottle.height() / 2;
+      }
+
+      return { x, y };
+    }
+
+    function drawArrow(fromIndex, toIndex, color, fromColorIndex, toColorIndex) {
+      const svg = $('#move-arrows');
+      svg.empty();
+
+      // Create arrowhead marker
+      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+      marker.setAttribute('id', 'arrowhead');
+      marker.setAttribute('markerWidth', '10');
+      marker.setAttribute('markerHeight', '10');
+      marker.setAttribute('refX', '9');
+      marker.setAttribute('refY', '3');
+      marker.setAttribute('orient', 'auto');
+      marker.setAttribute('markerUnits', 'strokeWidth');
+
+      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      polygon.setAttribute('points', '0 0, 10 3, 0 6');
+      polygon.setAttribute('fill', color || '#ffffff');
+      polygon.setAttribute('stroke', '#000000');
+      polygon.setAttribute('stroke-width', '0.5');
+
+      marker.appendChild(polygon);
+      defs.appendChild(marker);
+      svg.append(defs);
+
+      const from = getBottlePosition(fromIndex, fromColorIndex);
+      const to = getBottlePosition(toIndex, toColorIndex);
+
+      // Calculate control point for curved arrow
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Control point for bezier curve (curved upward)
+      const curvature = Math.min(100, distance * 0.3);
+      const midX = (from.x + to.x) / 2;
+      const midY = (from.y + to.y) / 2 - curvature;
+
+      // Create curved path data
+      const pathData = `M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`;
+
+      // Draw outline/shadow path first
+      const outlinePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      outlinePath.setAttribute('d', pathData);
+      outlinePath.setAttribute('stroke', '#000000');
+      outlinePath.setAttribute('stroke-width', '6');
+      outlinePath.setAttribute('fill', 'none');
+      outlinePath.setAttribute('opacity', '0.5');
+      svg.append(outlinePath);
+
+      // Create main colored path
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute('stroke', color || '#ffffff');
+      path.setAttribute('stroke-width', '4');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('marker-end', 'url(#arrowhead)');
+      path.setAttribute('opacity', '0.95');
+
+      svg.append(path);
+    }
+
+    function renderVisualBottles(bottles, highlightFrom = -1, highlightTo = -1, transferColor = null) {
+      const container = $('#visual-bottles');
+      container.html('');
+
+      const maxBottlesPerRow = 6;
+      let currentRow = null;
+
+      bottles.forEach((bottleColors, index) => {
+        // Create a new row every 6 bottles
+        if (index % maxBottlesPerRow === 0) {
+          currentRow = $('<div class="bottle-row"></div>');
+          container.append(currentRow);
+        }
+
+        const bottleDiv = $(bottle);
+        bottleDiv.find('.color').each(function(i) {
+          const colorKey = bottleColors[i];
+          $(this).data('color', colorKey);
+          $(this).css({ background: colors[colorKey] });
+        });
+        bottleDiv.find('.index').html(index + 1);
+
+        // Highlight bottles involved in current move
+        if (index === highlightFrom) {
+          bottleDiv.css({ border: '3px solid #ff6b6b', boxShadow: '0 0 10px rgba(255,107,107,0.5)', 'border-top': 0 });
+        } else if (index === highlightTo) {
+          bottleDiv.css({ border: '3px solid #51cf66', boxShadow: '0 0 10px rgba(81,207,102,0.5)', 'border-top': 0 });
+        }
+
+        currentRow.append(bottleDiv);
+      });
+
+      // Draw arrow if there's an active move
+      if (highlightFrom >= 0 && highlightTo >= 0 && transferColor) {
+        // Find the topmost non-empty color in source bottle
+        let fromColorIndex = -1;
+        for (let i = 3; i >= 0; i--) {
+          if (bottles[highlightFrom][i] !== empty) {
+            fromColorIndex = i;
+            break;
+          }
+        }
+
+        // Find where the color will land in destination bottle (topmost empty or top of stack)
+        let toColorIndex = -1;
+        for (let i = 0; i < 4; i++) {
+          if (bottles[highlightTo][i] === empty) {
+            toColorIndex = i;
+            break;
+          }
+        }
+        // If no empty found, colors will stack on top (shouldn't happen in valid moves)
+        if (toColorIndex === -1) toColorIndex = 3;
+
+        // Wait for DOM to update before drawing arrow
+        setTimeout(() => {
+          // Update SVG height to match content
+          const containerHeight = $('#visual-bottles').outerHeight();
+          $('#move-arrows').height(containerHeight);
+          $('#visual-bottles-container').height(containerHeight);
+
+          drawArrow(highlightFrom, highlightTo, transferColor, fromColorIndex, toColorIndex);
+        }, 50);
+      } else {
+        $('#move-arrows').empty();
+      }
+    }
+
+    function goToStep(step) {
+      visualState.currentStep = step;
+
+      // Show state BEFORE the current move (step N shows state before move N)
+      let currentBottles = visualState.initialBottles.map(b => [...b]);
+      let highlightFrom = -1;
+      let highlightTo = -1;
+      let transferColor = null;
+
+      // Apply all moves up to (but not including) current step
+      for (let i = 0; i < step - 1; i++) {
+        currentBottles = applyMove(currentBottles, visualState.moves[i]);
+      }
+
+      // Get highlight info and transfer color for current move
+      if (step >= 1 && step <= visualState.moves.length) {
+        const move = visualState.moves[step - 1];
+        highlightFrom = move[0];
+        highlightTo = move[1];
+
+        // Find the color being transferred from current state
+        for (let i = 3; i >= 0; i--) {
+          if (currentBottles[highlightFrom][i] !== empty) {
+            transferColor = colors[currentBottles[highlightFrom][i]];
+            break;
+          }
+        }
+      }
+
+      renderVisualBottles(currentBottles, highlightFrom, highlightTo, transferColor);
+
+      $('#current-step').text(step);
+
+      // Update move info
+      if (step >= 1 && step <= visualState.moves.length) {
+        const move = visualState.moves[step - 1];
+        $('#current-move').text('Move: ' + (move[0] + 1) + ' → ' + (move[1] + 1));
+      }
+
+      // Update button states
+      $('#step-first, #step-prev').prop('disabled', step === 1);
+      $('#step-next, #step-last').prop('disabled', step === visualState.moves.length);
+    }
+
+    function startPlayback() {
+      $('#step-play').hide();
+      $('#step-pause').show();
+
+      visualState.playInterval = setInterval(() => {
+        if (visualState.currentStep < visualState.moves.length) {
+          goToStep(visualState.currentStep + 1);
+        } else {
+          stopPlayback();
+        }
+      }, 1500);
+    }
+
+    function stopPlayback() {
+      $('#step-pause').hide();
+      $('#step-play').show();
+
+      if (visualState.playInterval) {
+        clearInterval(visualState.playInterval);
+        visualState.playInterval = null;
+      }
+    }
+
+    function initVisualSolver(initialBottles, moves) {
+      visualState.initialBottles = initialBottles.map(b => [...b]);
+      visualState.moves = moves;
+      visualState.currentStep = 1;
+
+      $('#visual-solver').show();
+      $('#total-steps').text(moves.length);
+
+      goToStep(1);
+
+      // Smooth scroll to visual solver
+      setTimeout(() => {
+        const visualSolver = document.getElementById('visual-solver');
+        if (visualSolver) {
+          visualSolver.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+
+    // Visual solver controls
+    $('#step-first').on('click', () => {
+      stopPlayback();
+      goToStep(1);
+    });
+
+    $('#step-prev').on('click', () => {
+      stopPlayback();
+      if (visualState.currentStep > 1) {
+        goToStep(visualState.currentStep - 1);
+      }
+    });
+
+    $('#step-next').on('click', () => {
+      stopPlayback();
+      if (visualState.currentStep < visualState.moves.length) {
+        goToStep(visualState.currentStep + 1);
+      }
+    });
+
+    $('#step-last').on('click', () => {
+      stopPlayback();
+      goToStep(visualState.moves.length);
+    });
+
+    $('#step-play').on('click', startPlayback);
+    $('#step-pause').on('click', stopPlayback);
+
+    // Keyboard controls - Space and Enter advance to next step
+    $(document).on('keydown', function(e) {
+      // Only handle keyboard if visual solver is visible
+      if ($('#visual-solver').is(':visible')) {
+        if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
+          e.preventDefault();
+          if (visualState.currentStep < visualState.moves.length) {
+            stopPlayback();
+            goToStep(visualState.currentStep + 1);
+          }
+        }
+        // Arrow keys for navigation
+        else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          if (visualState.currentStep < visualState.moves.length) {
+            stopPlayback();
+            goToStep(visualState.currentStep + 1);
+          }
+        }
+        else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          if (visualState.currentStep > 1) {
+            stopPlayback();
+            goToStep(visualState.currentStep - 1);
+          }
+        }
+      }
+    });
+
+    // Click/tap on visualization area to advance
+    $('#visual-bottles-container').on('click', function() {
+      if (visualState.currentStep < visualState.moves.length) {
+        stopPlayback();
+        goToStep(visualState.currentStep + 1);
+      }
     });
 
     delete window.PUZZLE_OPTIONS;
