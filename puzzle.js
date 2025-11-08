@@ -611,6 +611,23 @@
       shadowFilter.appendChild(feGaussianBlur);
       defs.appendChild(shadowFilter);
 
+      const arrowShadow = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+      arrowShadow.setAttribute('id', 'arrow-drop-shadow');
+      arrowShadow.setAttribute('x', '-20%');
+      arrowShadow.setAttribute('y', '-20%');
+      arrowShadow.setAttribute('width', '140%');
+      arrowShadow.setAttribute('height', '140%');
+
+      const feDropShadow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
+      feDropShadow.setAttribute('dx', '0');
+      feDropShadow.setAttribute('dy', '1');
+      feDropShadow.setAttribute('stdDeviation', '0.8');
+      feDropShadow.setAttribute('flood-color', '#000000');
+      feDropShadow.setAttribute('flood-opacity', '0.25');
+
+      arrowShadow.appendChild(feDropShadow);
+      defs.appendChild(arrowShadow);
+
       const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
       marker.setAttribute('id', 'arrowhead');
       marker.setAttribute('markerWidth', '8');
@@ -673,6 +690,7 @@
       path.setAttribute('fill', 'none');
       path.setAttribute('marker-end', 'url(#arrowhead)');
       path.setAttribute('opacity', '0.95');
+      path.setAttribute('filter', 'url(#arrow-drop-shadow)');
 
       svg.append(path);
 
