@@ -293,5 +293,23 @@ h1, h2 {
 }
 
 #move-arrows path.dashed {
-  animation: dashMove 0.8s linear infinite;
+  animation: dashMove 0.6s linear infinite;
+}
+#move-arrows path.arrow-pulse {
+  mix-blend-mode: screen;
+  animation: arrowPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.65;
+  }
+  100% {
+    stroke-dashoffset: -360;
+    opacity: 0;
+  }
 }

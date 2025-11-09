@@ -694,6 +694,20 @@
 
       svg.append(path);
 
+      // Add glowing pulse that travels along the path
+      const pulsePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pulsePath.setAttribute('d', pathData);
+      pulsePath.setAttribute('stroke', '#ffffff');
+      pulsePath.setAttribute('stroke-width', '9');
+      pulsePath.setAttribute('fill', 'none');
+      pulsePath.setAttribute('stroke-linecap', 'round');
+      pulsePath.setAttribute('opacity', '0.55');
+      pulsePath.setAttribute('stroke-dasharray', '30 400');
+      pulsePath.setAttribute('stroke-dashoffset', '0');
+      pulsePath.setAttribute('class', 'arrow-pulse');
+
+      svg.append(pulsePath);
+
       // Add moving dotted line overlay
       const dottedPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       dottedPath.setAttribute('d', pathData);
@@ -742,13 +756,6 @@
           $(this).css({ background: colors[colorKey] });
         });
         bottleDiv.find('.index').html(index + 1);
-
-        // Highlight bottles involved in current move
-        if (index === highlightFrom) {
-          bottleDiv.css({ border: '3px solid #ff6b6b', boxShadow: '0 0 10px rgba(255,107,107,0.5)', 'border-top': 0 });
-        } else if (index === highlightTo) {
-          bottleDiv.css({ border: '3px solid #51cf66', boxShadow: '0 0 10px rgba(81,207,102,0.5)', 'border-top': 0 });
-        }
 
         currentRow.append(bottleDiv);
       });
