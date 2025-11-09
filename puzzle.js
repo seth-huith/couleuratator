@@ -172,42 +172,37 @@
     $('#bottles').on('click', '.color', function (e) {
       colorElement = $(this);
 
-      // Position modal at click location
+      // Position modal at click location while clamping to viewport
       const modalDialog = $('#color-modal .modal-dialog');
-      const modalWidth = 272;
-      const modalHeight = 272;
+      const modalWidth = modalDialog.outerWidth() || 272;
+      const modalHeight = modalDialog.outerHeight() || 272;
+      const margin = 12;
 
-      let clickX = e.pageX;
-      let clickY = e.pageY;
-
-      // Ensure modal stays within viewport
       const viewportWidth = $(window).width();
       const viewportHeight = $(window).height();
-      const scrollTop = $(window).scrollTop();
 
-      // Adjust X position if too close to right edge
-      if (clickX + modalWidth / 2 > viewportWidth) {
-        clickX = viewportWidth - modalWidth / 2 - 10;
-      }
-      // Adjust X position if too close to left edge
-      if (clickX - modalWidth / 2 < 0) {
-        clickX = modalWidth / 2 + 10;
-      }
+      const clamp = (value, min, max) => {
+        if (min > max) {
+          return (min + max) / 2;
+        }
+        return Math.min(Math.max(value, min), max);
+      };
 
-      // Adjust Y position if too close to bottom edge
-      if (clickY + modalHeight / 2 > scrollTop + viewportHeight) {
-        clickY = scrollTop + viewportHeight - modalHeight / 2 - 10;
-      }
-      // Adjust Y position if too close to top edge
-      if (clickY - modalHeight / 2 < scrollTop) {
-        clickY = scrollTop + modalHeight / 2 + 10;
-      }
+      const minX = (modalWidth / 2) + margin;
+      const maxX = viewportWidth - (modalWidth / 2) - margin;
+      const minY = (modalHeight / 2) + margin;
+      const maxY = viewportHeight - (modalHeight / 2) - margin;
 
-      // Position at click with centering transform
+      const clientX = e.clientX !== undefined ? e.clientX : (e.originalEvent && e.originalEvent.touches ? e.originalEvent.touches[0].clientX : viewportWidth / 2);
+      const clientY = e.clientY !== undefined ? e.clientY : (e.originalEvent && e.originalEvent.touches ? e.originalEvent.touches[0].clientY : viewportHeight / 2);
+
+      const boundedX = clamp(clientX, minX, maxX);
+      const boundedY = clamp(clientY, minY, maxY);
+
       modalDialog.css({
         'position': 'fixed',
-        'left': (clickX - $(window).scrollLeft()) + 'px',
-        'top': (clickY - scrollTop) + 'px',
+        'left': boundedX + 'px',
+        'top': boundedY + 'px',
         'margin': '0',
         'transform': 'translate(-50%, -50%)'
       });
