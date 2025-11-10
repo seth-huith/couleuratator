@@ -168,58 +168,149 @@
     const colorModal = new bootstrap.Modal(document.getElementById('color-modal'));
     const empty = 'Z';
     let colorElement = null;
+    let activePointerId = null;
+    let pointerSelectionHandled = false;
 
-    $('#bottles').on('click', '.color', function (e) {
-      colorElement = $(this);
+    function getEventCoordinates(e) {
+      const original = e && (e.originalEvent || e);
 
-      // Position modal at click location while clamping to viewport
-      const modalDialog = $('#color-modal .modal-dialog');
-      const modalWidth = modalDialog.outerWidth() || 272;
-      const modalHeight = modalDialog.outerHeight() || 272;
-      const margin = 12;
+      if (original && original.touches && original.touches.length) {
+        return {
+          x: original.touches[0].clientX,
+          y: original.touches[0].clientY,
+        };
+      }
+
+      if (original && original.changedTouches && original.changedTouches.length) {
+        return {
+          x: original.changedTouches[0].clientX,
+          y: original.changedTouches[0].clientY,
+        };
+      }
+
+      if (original && original.clientX !== undefined && original.clientY !== undefined) {
+        return { x: original.clientX, y: original.clientY };
+      }
+
+      if (e && e.clientX !== undefined && e.clientY !== undefined) {
+        return { x: e.clientX, y: e.clientY };
+      }
 
       const viewportWidth = $(window).width();
       const viewportHeight = $(window).height();
 
-      const clamp = (value, min, max) => {
-        if (min > max) {
-          return (min + max) / 2;
-        }
-        return Math.min(Math.max(value, min), max);
-      };
+      return { x: viewportWidth / 2, y: viewportHeight / 2 };
+    }
 
-      const minX = (modalWidth / 2) + margin;
-      const maxX = viewportWidth - (modalWidth / 2) - margin;
-      const minY = (modalHeight / 2) + margin;
-      const maxY = viewportHeight - (modalHeight / 2) - margin;
+    function clamp(value, min, max) {
+      if (min > max) {
+        return (min + max) / 2;
+      }
+      return Math.min(Math.max(value, min), max);
+    }
 
-      const clientX = e.clientX !== undefined ? e.clientX : (e.originalEvent && e.originalEvent.touches ? e.originalEvent.touches[0].clientX : viewportWidth / 2);
-      const clientY = e.clientY !== undefined ? e.clientY : (e.originalEvent && e.originalEvent.touches ? e.originalEvent.touches[0].clientY : viewportHeight / 2);
+    function positionColorModal(event) {
+      const modalDialog = $('#color-modal .modal-dialog');
+      const modalWidth = modalDialog.outerWidth() || 220;
+      const modalHeight = modalDialog.outerHeight() || 220;
+      const margin = 12;
+
+      const viewportWidth = $(window).width();
+      const viewportHeight = $(window).height();
+      const { x: clientX, y: clientY } = getEventCoordinates(event);
+
+      const minX = modalWidth / 2 + margin;
+      const maxX = viewportWidth - modalWidth / 2 - margin;
+      const minY = modalHeight / 2 + margin;
+      const maxY = viewportHeight - modalHeight / 2 - margin;
 
       const boundedX = clamp(clientX, minX, maxX);
       const boundedY = clamp(clientY, minY, maxY);
 
       modalDialog.css({
-        'position': 'fixed',
-        'left': boundedX + 'px',
-        'top': boundedY + 'px',
-        'margin': '0',
-        'transform': 'translate(-50%, -50%)'
+        position: 'fixed',
+        left: boundedX + 'px',
+        top: boundedY + 'px',
+        margin: '0',
+        transform: 'translate(-50%, -50%)',
       });
+    }
 
+    function openColorPicker(event, target) {
+      colorElement = $(target);
+      positionColorModal(event);
       colorModal.show();
-    });
-    $('#color-modal').on('click', '.color-button', function () {
-      if (colorElement) {
-        colorElement.data('color', $(this).data('color'));
-        colorElement.css({ background: colors[$(this).data('color')] });
+    }
+
+    function applySelectedColor(colorKey) {
+      if (!colorElement || colorKey === undefined) {
+        colorModal.hide();
+        return;
       }
+
+      colorElement.data('color', colorKey);
+      colorElement.css({ background: colors[colorKey] });
       colorModal.hide();
       $('#color-json').hide();
 
       countColors();
       $('.color-errors').hide();
       $('#solve').hide();
+      colorElement = null;
+    }
+
+    $('#color-modal').on('hidden.bs.modal', function () {
+      colorElement = null;
+      activePointerId = null;
+      pointerSelectionHandled = false;
+    });
+
+    $('#bottles').on('pointerdown', '.color', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) {
+        return;
+      }
+
+      e.preventDefault();
+      activePointerId = e.pointerId;
+      openColorPicker(e, this);
+    });
+
+    $('#bottles').on('click', '.color', function (e) {
+      if (e.originalEvent && e.originalEvent.pointerType) {
+        return;
+      }
+      openColorPicker(e, this);
+    });
+
+    $('#color-modal').on('pointerup', function (e) {
+      if (activePointerId === null || e.pointerId !== activePointerId) {
+        return;
+      }
+
+      const button = $(e.target).closest('.color-button');
+      if (button.length) {
+        pointerSelectionHandled = true;
+        applySelectedColor(button.data('color'));
+        setTimeout(() => {
+          pointerSelectionHandled = false;
+        }, 0);
+      }
+
+      activePointerId = null;
+    });
+
+    $(document).on('pointercancel.colorPicker', function (e) {
+      if (activePointerId !== null && e.pointerId === activePointerId) {
+        activePointerId = null;
+        colorModal.hide();
+      }
+    });
+
+    $('#color-modal').on('click', '.color-button', function () {
+      if (pointerSelectionHandled) {
+        return;
+      }
+      applySelectedColor($(this).data('color'));
     });
 
     /* -------------------- URL -----------------------*/
