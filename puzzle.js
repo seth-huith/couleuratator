@@ -637,9 +637,7 @@
       circle.setAttribute('cy', '4');
       circle.setAttribute('r', '1.2');
       circle.setAttribute('fill', color || '#ffffff');
-      circle.setAttribute('stroke', '#000000');
-      circle.setAttribute('stroke-width', '0.2');
-      circle.setAttribute('stroke-opacity', '0.5');
+      circle.setAttribute('opacity', '0.95');
 
       marker.appendChild(circle);
       defs.appendChild(marker);
@@ -718,16 +716,7 @@
       svg.append(dottedPath);
 
       // Add circle at starting position
-      const startCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      startCircle.setAttribute('cx', from.x + 3);
-      startCircle.setAttribute('cy', from.y - 2);
-      startCircle.setAttribute('r', '6');
-      startCircle.setAttribute('stroke', '#000000');
-      startCircle.setAttribute('stroke-width', '2');
-      startCircle.setAttribute('fill', '#000000');
-      startCircle.setAttribute('opacity', '0.4');
-
-      svg.append(startCircle);
+      // Removed the origin dot for a cleaner arrow
     }
 
     function renderVisualBottles(bottles, highlightFrom = -1, highlightTo = -1, transferColor = null) {

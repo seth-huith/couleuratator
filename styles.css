@@ -164,17 +164,19 @@ h1, h2 {
     margin-top: -8px;
 }
 #color-modal .modal-dialog {
-    width: 272px;
+    width: 220px;
+    max-width: 220px;
 }
 #color-modal .modal-body {
-    padding: 3px;
+    padding: 4px;
 }
 #color-modal .color-button {
     cursor: pointer;
     display: inline-block;
-    height: 60px;
-    width: 60px;
-    margin: 3px;
+    height: 48px;
+    width: 48px;
+    margin: 2px;
+    border-radius: 6px;
 }
 #solve {
   color: #cadfff;
