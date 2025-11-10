@@ -857,17 +857,37 @@
         // If no empty found, colors will stack on top (shouldn't happen in valid moves)
         if (toColorIndex === -1) toColorIndex = 3;
 
-        // Wait for DOM to update before drawing arrow
-        setTimeout(() => {
-          // Update SVG height to match content
+        window.requestAnimationFrame(() => {
+          $('#visual-bottles .color').removeClass('source-blink');
+
+          const sourceBottleEl = $('#visual-bottles .bottle').eq(highlightFrom);
+          if (sourceBottleEl.length && fromColorIndex >= 0) {
+            const movingColorKey = bottles[highlightFrom][fromColorIndex];
+            for (let idx = fromColorIndex; idx >= 0; idx--) {
+              if (bottles[highlightFrom][idx] === movingColorKey) {
+                const segment = sourceBottleEl.find('.color').eq(idx);
+                if (segment.length) {
+                  segment.removeClass('source-blink');
+                  void segment[0].offsetWidth;
+                  segment.addClass('source-blink');
+                }
+              } else if (bottles[highlightFrom][idx] !== empty) {
+                break;
+              } else {
+                break;
+              }
+            }
+          }
+
           const containerHeight = $('#visual-bottles').outerHeight();
           $('#move-arrows').height(containerHeight);
           $('#visual-bottles-container').height(containerHeight);
 
           drawArrow(highlightFrom, highlightTo, transferColor, fromColorIndex, toColorIndex);
-        }, 50);
+        });
       } else {
         $('#move-arrows').empty();
+        $('#visual-bottles .color').removeClass('source-blink');
       }
     }
 
