@@ -34,8 +34,10 @@
             color: #ffffff;
             padding: 8px 12px;
             min-height: 254px;
-            max-width: 400px;
-            display: block;
+            max-width: 300px;
+            min-width: 300px;
+            display: inline-block;
+            float: left;
             cursor: not-allowed;
             -webkit-touch-callout: none; /* iOS Safari */
             -webkit-user-select: none; /* Safari */
@@ -43,6 +45,13 @@
             -moz-user-select: none; /* Old versions of Firefox */
             -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+        }
+        #raw-code {
+            min-height: 254px;
+            max-width: 300px;
+            min-width: 300px;
+            display: inline-block;
+            float: left;
         }
         input, textarea {
             border-color: #212248 !important;
@@ -78,6 +87,9 @@
             line-height: 26px;
         }
         #single-color {
+            border-radius: 6px 0 0 6px;
+        }
+        #start-color {
             border-radius: 6px 0 0 6px;
         }
         .character-count {
@@ -235,66 +247,45 @@
         <div class="tab-pane fade active show" id="text-content" role="tabpanel" aria-labelledby="text-tab">
             <div class="container-fluid" style="padding-bottom: 100px;">
             <div class="row">
-                <div class="col-6">
-                    <div class="row">
-                        <div class="col">
-                            <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <button class="btn btn-primary float-end" data-clipboard-target="#raw-code">Copier</button>
-                            <span class="float-end character-count"><span id="character-count">0</span> / 300</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div id="preview" title="Preview"></div>
-                </div>
-                <div>
-                  <span style="background: #FFC336FF"></span>
-                  <span style="background: #FF4DEAFF"></span>
-                </div>
+              <div class="col">
+                <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
+                <div id="preview" title="Preview"></div>
+              </div>
+            </diV>
+            <div class="row">
+              <div class="col">
+                <button class="btn btn-primary" data-clipboard-target="#raw-code">Copier</button>
+                <span class="character-count"><span id="character-count">0</span> / 300</span>
+              </div>
             </div>
+            <br>
             <div class="row">
                 <div class="input-group">
                     <input id="single-color" value="#cadfff" data-jscolor="{}" />
-                    <button id="single-generate" class="btn btn-primary">Apply</button>
+                    <button id="single-generate" class="btn btn-primary">Straight color</button>
                 </div>
             </div>
             <div class="row">
                 <div class="input-group">
-                  <input id="start-color" value="#cadfff" data-jscolor="{}" /> 
-                  <input id="end-color" value="#cadfff" data-jscolor="{}" />
-                  <button id="gradient-apply" class="btn btn-primary">Gradient</button>
-                </div>
-            </div>
-            <!--
-            <div class="row">
-                <h2><br />Gradient</h2>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text">From</span>
-                        <input id="gradient-start" value="#cadfffff" data-jscolor="{}" />
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">To</span>
-                        <input id="gradient-end" value="#cadfffff" data-jscolor="{}" />
-                    </div>
+                  <input id="start-color-through-white" value="#cadfff" data-jscolor="{}" /> 
+                  <input id="end-color-through-white" value="#cadfff" data-jscolor="{}" />
+                  <button id="gradient-through-white" class="btn btn-primary">Gradient through white</button>
                 </div>
             </div>
             <div class="row">
-                <div class="col">
-                    <div class="input-group">
-                        <span class="input-group-text">Text</span>
-                        <input id="gradient-text" class="form-control" type="text" />
-                        <button id="gradient-generate" class="btn btn-primary">Boom</button>
-                    </div>
+                <div class="input-group">
+                  <input id="start-color-direct" value="#cadfff" data-jscolor="{}" /> 
+                  <input id="end-color-direct" value="#cadfff" data-jscolor="{}" />
+                  <button id="gradient-apply-direct" class="btn btn-primary">Gradient direct</button>
                 </div>
             </div>
-          -->
+            <div class="row">
+                <div class="input-group">
+                  <input id="start-color-rainbow" value="#cadfff" data-jscolor="{}" /> 
+                  <input id="end-color-rainbow" value="#cadfff" data-jscolor="{}" />
+                  <button id="gradient-apply-rainbow" class="btn btn-primary">Gradient rainbow</button>
+                </div>
+            </div>
         </div>
     </div>
 
