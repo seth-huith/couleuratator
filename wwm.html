@@ -1,0 +1,307 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.9/jscolor.min.js"></script>
+    <script src="https://colorjs.io/dist/color.global.js"></script>
+    <style>
+        body {
+            background: #313f64;
+            max-width: 1040px;
+            margin: auto;
+        }
+        body.modal-open {
+            overflow: inherit !important;
+        }
+        #tabs {
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        #tabs .nav-link {
+            color: #cadfff;
+        }
+        #tabs .nav-link.active {
+          color: #313f64;
+        }
+        button {
+          white-space: nowrap;
+        }
+        #preview {
+            background: #1f204f;
+            color: #ffffff;
+            padding: 8px 12px;
+            min-height: 254px;
+            max-width: 300px;
+            min-width: 300px;
+            display: inline-block;
+            float: left;
+            cursor: not-allowed;
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+        }
+        #raw-code {
+            min-height: 254px;
+            max-width: 300px;
+            min-width: 300px;
+            display: inline-block;
+            float: left;
+        }
+        input, textarea {
+            border-color: #212248 !important;
+        }
+        h1, h2 {
+            color: #cadfff;
+            margin: 20px 0;
+        }
+        [data-jscolor] {
+            border-width: 1px;
+            border-color: #cadfff !important;
+        }
+        .form-control {
+            border-width: 1px;
+            border-color: #cadfff !important;
+        }
+        .char-button {
+            margin: 4px 4px 4px 0;
+            width: 40px;
+        }
+        .char-button.btn.default-color {
+          margin: 0;
+          border-width: 0;
+        }
+        .emote-button {
+            font-size: 20px;
+            padding: 0 4px;
+            margin: 0 4px 4px 0;
+            width: 35px;
+        }
+        #single-generate {
+            height: 40px;
+            line-height: 26px;
+        }
+        #single-color {
+            border-radius: 6px 0 0 6px;
+        }
+        #start-color-through-white {
+            border-radius: 6px 0 0 6px;
+        }
+        #start-color-direct {
+            border-radius: 6px 0 0 6px;
+        }
+        #start-color-rainbow {
+            border-radius: 6px 0 0 6px;
+        }
+        .character-count {
+            color: #cadfff;
+            padding: 6px 10px;
+            font-style: italic;
+        }
+        #character-count.text-error {
+            color: red;
+        }
+        .btn.default-color {
+            background-color: #ffffff;
+            width: auto;
+        }
+        #bottle-colors {
+            display: block;
+            width: 200px;
+            float: left;
+        }
+        #bottle-colors .color-div {
+            display: flex;
+            align-items: center;
+            width: 90px;
+            height: 60px;
+            float: left;
+        }
+        #bottle-colors .color-div .color {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+        }
+        #bottle-colors .color-div .number {
+            display: inline-block;
+            color: #aabfdf;
+            font-size: 20px;
+            padding-left: 8px;
+            line-height: 40px;
+        }
+        #bottles {
+            display: block;
+            text-align: center;
+            width: 600px;
+            margin-right: 40px;
+            float: left;
+        }
+        #bottles .bottle {
+            border: 1px solid #aabfdf;
+            border-width: 0 2px 2px;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 280px;
+            margin: 0 15px 40px;
+            overflow: hidden;
+        }
+        #bottles .bottle .color {
+            position: absolute;
+            left: 0;
+            height: 60px;
+            width: 60px;
+            border-top: 1px dashed #aabfdf;
+            cursor: pointer;
+            background: repeating-linear-gradient(
+              45deg,
+            #39448a,
+            #39448a 10.5px,
+            #283163 10.5px,
+            #283163 21px
+            );
+        }
+        #bottles .bottle .color {
+            bottom: 0;
+        }
+        #bottles .bottle .color + .color {
+            bottom: 60px;
+        }
+        #bottles .bottle .color + .color + .color {
+            bottom: 120px;
+        }
+        #bottles .bottle .color + .color + .color + .color {
+            bottom: 180px;
+        }
+        #bottles .bottle .index {
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: center;
+            height: 30px;
+            width: 60px;
+            color: #cadfff;
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: -8px;
+        }
+        #color-modal .modal-dialog {
+            width: 272px;
+            margin-top: 160px;
+        }
+        #color-modal .modal-body {
+            padding: 3px;
+        }
+        #color-modal .color-button {
+            cursor: pointer;
+            display: inline-block;
+            height: 60px;
+            width: 60px;
+            margin: 3px;
+        }
+        #solve {
+          color: #cadfff;
+          display: none;
+        }
+        #solve-moves li {
+          list-style-type: none;
+          padding-left: 0;
+          margin-left: -20px;
+        }
+        #solve-moves input {
+          margin-right: 6px;
+        }
+        #solve-moves .checked {
+          text-decoration: line-through;
+          font-style: italic;
+        }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZST9R8QK4X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZST9R8QK4X');
+    </script>
+</head>
+<body>
+    <ul class="nav nav-tabs" id="tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="index.html">Medusa Vials</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="games.html">Game Center Vials</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" href="text.html">Texte</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" href="wwm.html">Where Winds Meet</a>
+      </li>
+      <div class="nav-item d-flex align-items-center ms-auto me-3">
+        <a href="https://tpjr.us/seth-huith" title="Like the tool ? Let's have a coffee !" target="_blank" style="color:#fff"><i class="fa fa-coffee"></i></a>
+      </div>
+    </ul>
+    <div class="tab-content" id="tab-contents">
+        <div class="tab-pane fade active show" id="text-content" role="tabpanel" aria-labelledby="text-tab">
+            <div class="container-fluid" style="padding-bottom: 100px;">
+            <div class="row">
+              <div class="col">
+                <textarea id="raw-code" class="form-control" rows="10" cols="54" wrap="hard"></textarea>
+                <div id="preview" title="Preview"></div>
+              </div>
+            </diV>
+            <div class="row">
+              <div class="col">
+                <button class="btn btn-primary" data-clipboard-target="#raw-code">Copier</button>
+                <button id="undo-button" class="btn btn-secondary">Undo</button>
+                <span class="character-count"><span id="character-count">0</span> / 300</span>
+              </div>
+            </div>
+            <br>
+            <div class="row" style="margin-bottom: 4px;">
+                <div class="input-group">
+                    <input id="single-color" value="#cadfff" data-jscolor="{}" />
+                    <button id="single-generate" class="btn btn-primary">Straight color</button>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 4px;">
+                <div class="input-group">
+                  <input id="start-color-through-white" value="#cadfff" data-jscolor="{}" />
+                  <input id="end-color-through-white" value="#cadfff" data-jscolor="{}" />
+                  <button id="gradient-through-white" class="btn btn-primary">Gradient through white</button>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 4px;">
+                <div class="input-group">
+                  <input id="start-color-direct" value="#cadfff" data-jscolor="{}" />
+                  <input id="end-color-direct" value="#cadfff" data-jscolor="{}" />
+                  <button id="gradient-apply-direct" class="btn btn-primary">Gradient direct</button>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 4px;">
+                <div class="input-group">
+                  <input id="start-color-rainbow" value="#cadfff" data-jscolor="{}" />
+                  <input id="end-color-rainbow" value="#cadfff" data-jscolor="{}" />
+                  <button id="gradient-apply-rainbow" class="btn btn-primary">Gradient rainbow</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12" id="ascii">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="wwm.js"></script>
+</body>
+</html>
