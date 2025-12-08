@@ -1,5 +1,6 @@
 <html>
 <head>
+    <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
@@ -89,7 +90,13 @@
         #single-color {
             border-radius: 6px 0 0 6px;
         }
-        #start-color {
+        #start-color-through-white {
+            border-radius: 6px 0 0 6px;
+        }
+        #start-color-direct {
+            border-radius: 6px 0 0 6px;
+        }
+        #start-color-rainbow {
             border-radius: 6px 0 0 6px;
         }
         .character-count {
@@ -255,67 +262,46 @@
             <div class="row">
               <div class="col">
                 <button class="btn btn-primary" data-clipboard-target="#raw-code">Copier</button>
+                <button id="undo-button" class="btn btn-secondary">Undo</button>
                 <span class="character-count"><span id="character-count">0</span> / 300</span>
               </div>
             </div>
             <br>
-            <div class="row">
+            <div class="row" style="margin-bottom: 4px;">
                 <div class="input-group">
                     <input id="single-color" value="#cadfff" data-jscolor="{}" />
                     <button id="single-generate" class="btn btn-primary">Straight color</button>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-bottom: 4px;">
                 <div class="input-group">
-                  <input id="start-color-through-white" value="#cadfff" data-jscolor="{}" /> 
+                  <input id="start-color-through-white" value="#cadfff" data-jscolor="{}" />
                   <input id="end-color-through-white" value="#cadfff" data-jscolor="{}" />
                   <button id="gradient-through-white" class="btn btn-primary">Gradient through white</button>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-bottom: 4px;">
                 <div class="input-group">
-                  <input id="start-color-direct" value="#cadfff" data-jscolor="{}" /> 
+                  <input id="start-color-direct" value="#cadfff" data-jscolor="{}" />
                   <input id="end-color-direct" value="#cadfff" data-jscolor="{}" />
                   <button id="gradient-apply-direct" class="btn btn-primary">Gradient direct</button>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-bottom: 4px;">
                 <div class="input-group">
-                  <input id="start-color-rainbow" value="#cadfff" data-jscolor="{}" /> 
+                  <input id="start-color-rainbow" value="#cadfff" data-jscolor="{}" />
                   <input id="end-color-rainbow" value="#cadfff" data-jscolor="{}" />
                   <button id="gradient-apply-rainbow" class="btn btn-primary">Gradient rainbow</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="modal" id="color-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
+            <div class="row">
+                <div class="col-12" id="ascii">
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script id="bottle-template" type="text/template">
-    <div class="bottle">
-        <div class="color" data-color="Z"></div>
-        <div class="color" data-color="Z"></div>
-        <div class="color" data-color="Z"></div>
-        <div class="color" data-color="Z"></div>
-        <div class="index"></div>
-    </div>
-</script>
-<script id="bottle-color-template" type="text/template">
-    <div class="color-div">
-        <div class="color"></div>
-        <span class="number"></span>
-    </div>
-</script>
-
-<script src="puzzle.js"></script>
 <script src="wwm.js"></script>
 </body>
 </html>
